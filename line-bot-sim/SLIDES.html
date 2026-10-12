@@ -4,20 +4,22 @@
   <meta charset="UTF-8">
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
 </head>
-<body class="bg-transparent text-[var(--foreground)] antialiased p-2 select-none">
-  <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-4 sm:p-5 shadow-lg max-w-xl mx-auto flex flex-col justify-between" style="min-height: 500px;">
+<body class="bg-transparent text-slate-100 antialiased p-2 select-none">
+  <!-- Discord Style Container: 深邃午夜藍紫底色 + 微光邊框 -->
+  <div class="bg-[#101226] border border-[#5865F2]/40 rounded-2xl p-4 sm:p-5 shadow-2xl max-w-xl mx-auto flex flex-col justify-between" style="min-height: 500px; box-shadow: 0 0 35px rgba(88, 101, 242, 0.18);">
     
     <!-- 頂部資訊與進度條 -->
-    <div class="border-b border-[var(--border)] pb-2.5">
-      <div class="flex items-center justify-between text-xs text-[var(--muted-foreground)] mb-1">
-        <span class="font-medium flex items-center gap-1.5">
-          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          LINE Bot × 本地開源 AI 新聞系統 · 視覺化成果報告
+    <div class="border-b border-[#2b2f5c] pb-2.5">
+      <div class="flex items-center justify-between text-xs text-[#a3a6c4] mb-1.5">
+        <span class="font-medium flex items-center gap-2 text-slate-200">
+          <span class="w-2.5 h-2.5 rounded-full bg-[#5865F2] shadow-sm shadow-[#5865F2] animate-pulse"></span>
+          LINE Bot × 本地開源 AI · 專案成果報告
         </span>
-        <span id="slideCounter" class="font-mono bg-[var(--secondary)] text-[var(--secondary-foreground)] px-2 py-0.5 rounded-full font-semibold">1 / 10</span>
+        <span id="slideCounter" class="font-mono bg-[#1e2246] text-[#c4c9ff] border border-[#3f4585] px-2.5 py-0.5 rounded-full text-[11px] font-bold">1 / 10</span>
       </div>
-      <div class="w-full bg-[var(--secondary)] h-1.5 rounded-full overflow-hidden">
-        <div id="progressBar" class="bg-emerald-500 h-full transition-all duration-300 ease-out" style="width: 10%;"></div>
+      <!-- 進度條：Discord Blurple 到 Fuchsia 漸層 -->
+      <div class="w-full bg-[#181a36] h-1.5 rounded-full overflow-hidden border border-[#2b2f5c]/50">
+        <div id="progressBar" class="bg-gradient-to-r from-[#5865F2] via-[#7983F5] to-[#EB459E] h-full transition-all duration-300 ease-out" style="width: 10%;"></div>
       </div>
     </div>
 
@@ -25,14 +27,14 @@
     <div id="slideContent" class="py-2.5 flex-1 flex flex-col justify-center"></div>
 
     <!-- 底部切換按鈕 -->
-    <div class="border-t border-[var(--border)] pt-2.5 flex items-center justify-between">
-      <button id="prevBtn" class="px-3 py-1 text-xs font-medium rounded-lg border border-[var(--border)] bg-[var(--secondary)] text-[var(--secondary-foreground)] hover:opacity-80 transition disabled:opacity-30 disabled:cursor-not-allowed">
+    <div class="border-t border-[#2b2f5c] pt-2.5 flex items-center justify-between">
+      <button id="prevBtn" class="px-3.5 py-1 text-xs font-semibold rounded-lg border border-[#3b3f73] bg-[#1e2246] text-[#b0b4db] hover:bg-[#2b2f5c] hover:text-white transition disabled:opacity-25 disabled:cursor-not-allowed">
         ← 上一頁
       </button>
 
       <div id="dotContainer" class="flex gap-1.5 overflow-x-auto py-1"></div>
 
-      <button id="nextBtn" class="px-3.5 py-1 text-xs font-semibold rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition flex items-center gap-1">
+      <button id="nextBtn" class="px-4 py-1 text-xs font-bold rounded-lg bg-[#5865F2] text-white hover:bg-[#4752C4] shadow-md shadow-[#5865F2]/40 transition flex items-center gap-1">
         <span>下一頁</span> →
       </button>
     </div>
@@ -47,26 +49,26 @@
         title: "LINE Bot × 本地開源 AI 即時新聞系統",
         body: `
           <div class="space-y-2.5 text-xs">
-            <div class="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 leading-relaxed">
-              <span class="font-bold text-emerald-600 dark:text-emerald-400">🎯 專案核心題目：</span><br>
+            <div class="p-2.5 rounded-xl bg-[#5865F2]/15 border border-[#5865F2]/40 leading-relaxed text-slate-200">
+              <span class="font-bold text-[#7983F5]">🎯 專案核心題目：</span><br>
               結合 <strong>Antigravity 全域領航</strong>、<strong>OpenCode 結對工程</strong> 與 <strong>Ollama 本地開源大模型</strong> 的 RAG 即時新聞系統。
             </div>
             <div class="grid grid-cols-2 gap-2">
-              <div class="p-2 rounded-lg bg-[var(--secondary)] border border-[var(--border)]">
-                <div class="font-bold text-blue-500">👨‍💻 雙 Agent 協同開發</div>
-                <div class="text-[var(--muted-foreground)]">Antigravity 架構領航 + OpenCode 代碼落實</div>
+              <div class="p-2 rounded-xl bg-[#181a38] border border-[#2e3366]">
+                <div class="font-bold text-[#5865F2]">👨‍💻 雙 Agent 協同開發</div>
+                <div class="text-[#9ea3c7] text-[11px]">Antigravity 架構領航 + OpenCode 代碼落實</div>
               </div>
-              <div class="p-2 rounded-lg bg-[var(--secondary)] border border-[var(--border)]">
-                <div class="font-bold text-purple-500">🦙 本機開源大腦</div>
-                <div class="text-[var(--muted-foreground)]">Ollama · Qwen 2.5 (3B) 離線推理</div>
+              <div class="p-2 rounded-xl bg-[#181a38] border border-[#2e3366]">
+                <div class="font-bold text-[#EB459E]">🦙 本機開源大腦</div>
+                <div class="text-[#9ea3c7] text-[11px]">Ollama · Qwen 2.5 (3B) 離線推理</div>
               </div>
-              <div class="p-2 rounded-lg bg-[var(--secondary)] border border-[var(--border)]">
-                <div class="font-bold text-emerald-500">📰 RAG 即時新聞</div>
-                <div class="text-[var(--muted-foreground)]">Google News RSS 動態關鍵字檢索</div>
+              <div class="p-2 rounded-xl bg-[#181a38] border border-[#2e3366]">
+                <div class="font-bold text-[#57F287]">📰 RAG 即時新聞</div>
+                <div class="text-[#9ea3c7] text-[11px]">Google News RSS 動態關鍵字檢索</div>
               </div>
-              <div class="p-2 rounded-lg bg-[var(--secondary)] border border-[var(--border)]">
-                <div class="font-bold text-amber-500">💬 LINE 擬真前端</div>
-                <div class="text-[var(--muted-foreground)]">高擬真行動版對話網頁 (Port 5001)</div>
+              <div class="p-2 rounded-xl bg-[#181a38] border border-[#2e3366]">
+                <div class="font-bold text-[#FEE75C]">💬 LINE 擬真前端</div>
+                <div class="text-[#9ea3c7] text-[11px]">高擬真行動版對話網頁 (Port 5001)</div>
               </div>
             </div>
           </div>
@@ -78,32 +80,32 @@
         title: "是否符合老師的作業要求？（逐條驗證）",
         body: `
           <div class="space-y-1.5 text-xs leading-relaxed">
-            <div class="p-2 rounded-lg bg-[var(--secondary)] border border-[var(--border)] flex items-start gap-2">
-              <span class="text-emerald-500 font-bold">✅</span>
+            <div class="p-2 rounded-xl bg-[#181a38] border border-[#2e3366] flex items-start gap-2">
+              <span class="text-[#57F287] font-bold">✅</span>
               <div>
-                <span class="font-bold">要求 1：請用 OpenCode</span>
-                <div class="text-[var(--muted-foreground)]">完成：全程以 OpenCode 自主 Agent 撰寫代碼，完成初始版、關鍵字搜尋與多輪對話三次重構。</div>
+                <span class="font-bold text-white">要求 1：請用 OpenCode</span>
+                <div class="text-[#9ea3c7] text-[11px]">完成：全程以 OpenCode 自主 Agent 撰寫代碼，完成初始版、關鍵字搜尋與多輪對話三次重構。</div>
               </div>
             </div>
-            <div class="p-2 rounded-lg bg-[var(--secondary)] border border-[var(--border)] flex items-start gap-2">
-              <span class="text-emerald-500 font-bold">✅</span>
+            <div class="p-2 rounded-xl bg-[#181a38] border border-[#2e3366] flex items-start gap-2">
+              <span class="text-[#57F287] font-bold">✅</span>
               <div>
-                <span class="font-bold">要求 2：使用本地開源模型</span>
-                <div class="text-[var(--muted-foreground)]">完成：採用本機 Ollama 運行 Qwen 2.5 (3B)，全程離線推理，不需外部付費 API。</div>
+                <span class="font-bold text-white">要求 2：使用本地開源模型</span>
+                <div class="text-[#9ea3c7] text-[11px]">完成：採用本機 Ollama 運行 Qwen 2.5 (3B)，全程離線推理，不需外部付費 API。</div>
               </div>
             </div>
-            <div class="p-2 rounded-lg bg-[var(--secondary)] border border-[var(--border)] flex items-start gap-2">
-              <span class="text-emerald-500 font-bold">✅</span>
+            <div class="p-2 rounded-xl bg-[#181a38] border border-[#2e3366] flex items-start gap-2">
+              <span class="text-[#57F287] font-bold">✅</span>
               <div>
-                <span class="font-bold">要求 3：完成 LINE Bot</span>
-                <div class="text-[var(--muted-foreground)]">完成：打造擬真度 100% 的 LINE 手機版聊天室（綠色主題/氣泡/打字中動畫/快捷鍵）。</div>
+                <span class="font-bold text-white">要求 3：完成 LINE Bot</span>
+                <div class="text-[#9ea3c7] text-[11px]">完成：打造擬真度 100% 的 LINE 手機版聊天室（綠色主題/氣泡/打字中動畫/快捷鍵）。</div>
               </div>
             </div>
-            <div class="p-2 rounded-lg bg-[var(--secondary)] border border-[var(--border)] flex items-start gap-2">
-              <span class="text-emerald-500 font-bold">✅</span>
+            <div class="p-2 rounded-xl bg-[#181a38] border border-[#2e3366] flex items-start gap-2">
+              <span class="text-[#57F287] font-bold">✅</span>
               <div>
-                <span class="font-bold">要求 4：能否用 AI 找到最新新聞？</span>
-                <div class="text-[var(--muted-foreground)]">超額完成：實作 RAG 架構動態抓取即時新聞，更延伸出「點選第 2 則深度摘要」功能！</div>
+                <span class="font-bold text-white">要求 4：能否用 AI 找到最新新聞？</span>
+                <div class="text-[#9ea3c7] text-[11px]">超額完成：實作 RAG 架構動態抓取即時新聞，更延伸出「點選第 2 則深度摘要」功能！</div>
               </div>
             </div>
           </div>
@@ -115,42 +117,42 @@
         title: "【開發架構圖】雙 Agent 人機協同閉環",
         body: `
           <div class="space-y-2 text-xs">
-            <div class="p-2.5 rounded-xl bg-[var(--secondary)] border border-[var(--border)] space-y-2">
+            <div class="p-2.5 rounded-xl bg-[#161834] border border-[#2e3366] space-y-2">
               <!-- 第一層：使用者決策 -->
-              <div class="flex items-center justify-between p-2 rounded-lg bg-amber-500/10 border border-amber-500/30">
+              <div class="flex items-center justify-between p-2 rounded-xl bg-[#FEE75C]/10 border border-[#FEE75C]/40">
                 <div class="flex items-center gap-2">
                   <span class="text-base">🧑‍💼</span>
                   <div>
-                    <span class="font-bold text-amber-500">我（產品經理 / 需求決策者）</span>
-                    <div class="text-[10px] text-[var(--muted-foreground)]">提出功能需求 · 驗收成果 · 主導專案方向</div>
+                    <span class="font-bold text-[#FEE75C]">我（產品經理 / 需求決策者）</span>
+                    <div class="text-[10px] text-[#9ea3c7]">提出功能需求 · 驗收成果 · 主導專案方向</div>
                   </div>
                 </div>
-                <span class="text-[10px] bg-amber-500 text-white px-1.5 py-0.5 rounded font-mono">Input</span>
+                <span class="text-[10px] bg-[#FEE75C] text-slate-900 px-1.5 py-0.5 rounded font-bold font-mono">User</span>
               </div>
 
               <!-- 雙向引導箭頭 -->
-              <div class="flex justify-around text-center text-[10px] text-[var(--muted-foreground)]">
+              <div class="flex justify-around text-center text-[10px] text-[#7983F5]">
                 <div>↓ ① 提出白話需求</div>
                 <div>↑ ② 回饋優化 Prompt</div>
               </div>
 
               <!-- 第二層：雙 Agent 協作樞紐 -->
               <div class="grid grid-cols-2 gap-2">
-                <div class="p-2 rounded-lg bg-blue-500/10 border border-blue-500/30">
-                  <div class="flex items-center gap-1.5 font-bold text-blue-500 mb-0.5">
+                <div class="p-2 rounded-xl bg-[#5865F2]/15 border border-[#5865F2]/40">
+                  <div class="flex items-center gap-1.5 font-bold text-[#7983F5] mb-0.5">
                     <span>🚀</span> Antigravity
                   </div>
-                  <div class="text-[10px] text-[var(--muted-foreground)] space-y-0.5">
+                  <div class="text-[10px] text-[#a3a6c4] space-y-0.5">
                     <div>• 架構規劃 & Prompt 導演</div>
                     <div>• 底層 Port 403 衝突破案</div>
                     <div>• 自動化 Git / GitHub 存檔</div>
                   </div>
                 </div>
-                <div class="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/30">
-                  <div class="flex items-center gap-1.5 font-bold text-emerald-600 dark:text-emerald-400 mb-0.5">
+                <div class="p-2 rounded-xl bg-[#57F287]/15 border border-[#57F287]/40">
+                  <div class="flex items-center gap-1.5 font-bold text-[#57F287] mb-0.5">
                     <span>⚡</span> OpenCode
                   </div>
-                  <div class="text-[10px] text-[var(--muted-foreground)] space-y-0.5">
+                  <div class="text-[10px] text-[#a3a6c4] space-y-0.5">
                     <div>• 終端機自主工程師</div>
                     <div>• 生成與重構 Python 代碼</div>
                     <div>• 實測驗證應用可行性</div>
@@ -159,10 +161,10 @@
               </div>
 
               <!-- 第三層：成果產出 -->
-              <div class="p-1.5 rounded-lg bg-[var(--card)] border border-[var(--border)] text-center text-[10px] text-[var(--muted-foreground)] flex items-center justify-between">
+              <div class="p-1.5 rounded-xl bg-[#101226] border border-[#2e3366] text-center text-[10px] text-[#9ea3c7] flex items-center justify-between">
                 <span>📁 產出專案：app.py / index.html</span>
-                <span>➔</span>
-                <span class="text-emerald-500 font-bold">📦 自動同步至 GitHub 倉庫</span>
+                <span class="text-[#5865F2]">➔</span>
+                <span class="text-[#57F287] font-bold">📦 自動同步至 GitHub 倉庫</span>
               </div>
             </div>
           </div>
@@ -174,47 +176,47 @@
         title: "【資料檢索架構圖】即時新聞 RAG 檢索流",
         body: `
           <div class="space-y-2 text-xs">
-            <div class="p-2.5 rounded-xl bg-[var(--secondary)] border border-[var(--border)] space-y-2">
+            <div class="p-2.5 rounded-xl bg-[#161834] border border-[#2e3366] space-y-2">
               
               <!-- 步驟 1：自然語言輸入 -->
-              <div class="flex items-center gap-2 p-1.5 rounded-lg bg-[var(--card)] border border-[var(--border)]">
-                <span class="bg-emerald-500 text-white text-[10px] px-1.5 py-0.5 rounded font-mono">1</span>
+              <div class="flex items-center gap-2 p-1.5 rounded-xl bg-[#101226] border border-[#2e3366]">
+                <span class="bg-[#57F287] text-slate-900 text-[10px] font-bold px-1.5 py-0.5 rounded font-mono">1</span>
                 <div>
-                  <span class="font-bold">使用者輸入：</span>
-                  <span class="text-emerald-600 dark:text-emerald-400 font-mono">「幫我查台積電最新新聞」</span>
+                  <span class="font-bold text-white">使用者輸入：</span>
+                  <span class="text-[#57F287] font-mono">「幫我查台積電最新新聞」</span>
                 </div>
               </div>
 
-              <div class="text-center text-[10px] text-[var(--muted-foreground)]">↓ 發送 POST /api/chat 到後端</div>
+              <div class="text-center text-[10px] text-[#7983F5]">↓ 發送 POST /api/chat 到後端</div>
 
               <!-- 步驟 2：後端停用詞清洗 -->
-              <div class="p-2 rounded-lg bg-blue-500/10 border border-blue-500/30 space-y-1">
+              <div class="p-2 rounded-xl bg-[#5865F2]/15 border border-[#5865F2]/40 space-y-1">
                 <div class="flex items-center justify-between">
-                  <span class="font-bold text-blue-500">2. Flask 智慧清洗（extract_keyword）</span>
-                  <span class="text-[10px] text-blue-400">停用詞過濾</span>
+                  <span class="font-bold text-[#7983F5]">2. Flask 智慧清洗（extract_keyword）</span>
+                  <span class="text-[10px] text-[#c4c9ff]">停用詞過濾</span>
                 </div>
-                <div class="text-[10px] text-[var(--muted-foreground)] font-mono">
-                  扣除「幫我查」、「最新」、「新聞」 ➔ 提煉核心詞：<span class="text-amber-500 font-bold">【台積電】</span>
+                <div class="text-[10px] text-[#9ea3c7] font-mono">
+                  扣除「幫我查」、「最新」、「新聞」 ➔ 提煉核心詞：<span class="text-[#FEE75C] font-bold">【台積電】</span>
                 </div>
               </div>
 
-              <div class="text-center text-[10px] text-[var(--muted-foreground)]">↓ urllib.parse.quote 編碼請求</div>
+              <div class="text-center text-[10px] text-[#7983F5]">↓ urllib.parse.quote 編碼請求</div>
 
               <!-- 步驟 3：外部 RSS 檢索 -->
-              <div class="p-2 rounded-lg bg-amber-500/10 border border-amber-500/30 space-y-1">
+              <div class="p-2 rounded-xl bg-[#00d4aa]/15 border border-[#00d4aa]/40 space-y-1">
                 <div class="flex items-center justify-between">
-                  <span class="font-bold text-amber-500">3. Google News RSS 搜尋引擎</span>
-                  <span class="text-[10px] text-amber-400">毫秒級即時時事</span>
+                  <span class="font-bold text-[#00d4aa]">3. Google News RSS 搜尋引擎</span>
+                  <span class="text-[10px] text-[#8affdf]">即時全球新聞</span>
                 </div>
-                <div class="text-[10px] text-[var(--muted-foreground)]">
+                <div class="text-[10px] text-[#9ea3c7]">
                   抓取當前最新 5 則相關新聞（含標題、摘要、連結、發布時間）
                 </div>
               </div>
 
               <!-- 步驟 4：快取記憶 -->
-              <div class="p-1.5 rounded-lg bg-purple-500/10 border border-purple-500/30 text-[10px] flex items-center justify-between">
-                <span class="text-purple-400 font-bold">4. 記憶體快取：</span>
-                <span class="text-[var(--muted-foreground)]">寫入 LAST_NEWS_ITEMS 供後續深入剖析</span>
+              <div class="p-1.5 rounded-xl bg-[#EB459E]/15 border border-[#EB459E]/40 text-[10px] flex items-center justify-between">
+                <span class="text-[#EB459E] font-bold">4. 記憶體快取：</span>
+                <span class="text-[#c4c9ff]">寫入 LAST_NEWS_ITEMS 供後續深入剖析</span>
               </div>
 
             </div>
@@ -227,40 +229,40 @@
         title: "【查看摘要架構圖】本地推理與多輪下鑽",
         body: `
           <div class="space-y-2 text-xs">
-            <div class="p-2.5 rounded-xl bg-[var(--secondary)] border border-[var(--border)] space-y-2">
+            <div class="p-2.5 rounded-xl bg-[#161834] border border-[#2e3366] space-y-2">
 
               <!-- 階段 A：概覽條列 -->
-              <div class="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/30 space-y-1">
-                <div class="flex items-center justify-between font-bold text-emerald-600 dark:text-emerald-400">
+              <div class="p-2 rounded-xl bg-[#57F287]/15 border border-[#57F287]/40 space-y-1">
+                <div class="flex items-center justify-between font-bold text-[#57F287]">
                   <span>階段 ① · 概覽摘要（Overview）</span>
-                  <span class="text-[10px] font-mono">5 則清單</span>
+                  <span class="text-[10px] font-mono">5 則焦點快報</span>
                 </div>
-                <div class="text-[10px] text-[var(--muted-foreground)]">
+                <div class="text-[10px] text-[#9ea3c7]">
                   新聞資料 + Prompt 注入本機 Ollama ➔ 產出親切條列式快報 ➔ 前端動態生成【📖 深入看第 1~5 則】按鈕
                 </div>
               </div>
 
               <!-- 多輪下鑽觸發 -->
-              <div class="flex items-center justify-center gap-2 text-[10px] text-purple-400 font-bold py-0.5">
+              <div class="flex items-center justify-center gap-2 text-[10px] text-[#EB459E] font-bold py-0.5">
                 <span>點擊【📖 深入看第 2 則】或輸入「2」</span>
                 <span>➔ 觸發多輪下鑽</span>
               </div>
 
               <!-- 階段 B：深度四大維度 -->
-              <div class="p-2 rounded-lg bg-purple-500/10 border border-purple-500/30 space-y-1.5">
-                <div class="flex items-center justify-between font-bold text-purple-400">
+              <div class="p-2 rounded-xl bg-[#EB459E]/15 border border-[#EB459E]/40 space-y-1.5">
+                <div class="flex items-center justify-between font-bold text-[#EB459E]">
                   <span>階段 ② · 深度剖析（Deep Drill-down）</span>
-                  <span class="text-[10px] font-mono">Ollama Qwen 2.5 (3B)</span>
+                  <span class="text-[10px] font-mono text-[#ffb1de]">Ollama Qwen 2.5 (3B)</span>
                 </div>
                 <div class="grid grid-cols-2 gap-1 text-[10px]">
-                  <div class="p-1 rounded bg-[var(--card)] border border-[var(--border)]">📌【事件核心】</div>
-                  <div class="p-1 rounded bg-[var(--card)] border border-[var(--border)]">🔍【詳細背景經過】</div>
-                  <div class="p-1 rounded bg-[var(--card)] border border-[var(--border)]">💡【關鍵影響展望】</div>
-                  <div class="p-1 rounded bg-[var(--card)] border border-[var(--border)]">🔗【新聞來源連結】</div>
+                  <div class="p-1 rounded-lg bg-[#101226] border border-[#2e3366] text-white">📌【事件核心】</div>
+                  <div class="p-1 rounded-lg bg-[#101226] border border-[#2e3366] text-white">🔍【詳細背景經過】</div>
+                  <div class="p-1 rounded-lg bg-[#101226] border border-[#2e3366] text-white">💡【關鍵影響展望】</div>
+                  <div class="p-1 rounded-lg bg-[#101226] border border-[#2e3366] text-white">🔗【新聞來源連結】</div>
                 </div>
               </div>
 
-              <div class="p-1.5 rounded-lg bg-[var(--card)] border border-[var(--border)] text-center text-[10px] text-[var(--muted-foreground)]">
+              <div class="p-1.5 rounded-xl bg-[#101226] border border-[#2e3366] text-center text-[10px] text-[#9ea3c7]">
                 💬 成果：LINE 聊天室彈出完整的專業深度分析氣泡！
               </div>
 
@@ -274,20 +276,20 @@
         title: "Antigravity 在本專案中發揮的 5 大關鍵協助",
         body: `
           <div class="space-y-1.5 text-xs leading-relaxed">
-            <div class="p-1.5 rounded-lg bg-[var(--secondary)] border border-[var(--border)]">
-              <span class="font-bold text-blue-500">1. 環境架構導航</span>：協助安裝 OpenCode CLI、Ollama，並解決 zsh PATH 環境變數遺失。
+            <div class="p-1.5 rounded-xl bg-[#181a38] border border-[#2e3366]">
+              <span class="font-bold text-[#5865F2]">1. 環境架構導航</span>：協助安裝 OpenCode CLI、Ollama，並解決 zsh PATH 環境變數遺失。
             </div>
-            <div class="p-1.5 rounded-lg bg-[var(--secondary)] border border-[var(--border)]">
-              <span class="font-bold text-emerald-500">2. 提示詞工程規劃（Prompt Coaching）</span>：為零經驗的我打造精確工程級 Prompt，使 OpenCode 能零誤差產出。
+            <div class="p-1.5 rounded-xl bg-[#181a38] border border-[#2e3366]">
+              <span class="font-bold text-[#57F287]">2. 提示詞工程規劃（Prompt Coaching）</span>：為零經驗的我打造精確工程級 Prompt，使 OpenCode 能零誤差產出。
             </div>
-            <div class="p-1.5 rounded-lg bg-[var(--secondary)] border border-[var(--border)]">
-              <span class="font-bold text-purple-500">3. 自動化 Git 歷史追蹤</span>：即時在每一次功能改動後，自動 git add / commit / push 至 GitHub，保障代碼安全。
+            <div class="p-1.5 rounded-xl bg-[#181a38] border border-[#2e3366]">
+              <span class="font-bold text-[#EB459E]">3. 自動化 Git 歷史追蹤</span>：即時在每一次功能改動後，自動 git add / commit / push 至 GitHub，保障代碼安全。
             </div>
-            <div class="p-1.5 rounded-lg bg-[var(--secondary)] border border-[var(--border)]">
-              <span class="font-bold text-rose-500">4. 系統級除錯（AirPlay 403 衝突）</span>：精準診斷出 macOS ControlCenter 佔用 Port 5000，秒換至 Port 5001 解除封鎖。
+            <div class="p-1.5 rounded-xl bg-[#181a38] border border-[#2e3366]">
+              <span class="font-bold text-[#FEE75C]">4. 系統級除錯（AirPlay 403 衝突）</span>：精準診斷出 macOS ControlCenter 佔用 Port 5000，秒換至 Port 5001 解除封鎖。
             </div>
-            <div class="p-1.5 rounded-lg bg-[var(--secondary)] border border-[var(--border)]">
-              <span class="font-bold text-amber-500">5. 知識內化與視覺化</span>：將所有底層邏輯轉化為三大視覺架構圖與成果報告簡報。
+            <div class="p-1.5 rounded-xl bg-[#181a38] border border-[#2e3366]">
+              <span class="font-bold text-[#7983F5]">5. 知識內化與視覺化</span>：將所有底層邏輯轉化為三大視覺架構圖與 Discord 風格成果簡報。
             </div>
           </div>
         `
@@ -298,25 +300,25 @@
         title: "使用到的程式工具、模型及其個別作用",
         body: `
           <div class="grid grid-cols-2 gap-1.5 text-xs">
-            <div class="p-2 rounded-lg bg-[var(--secondary)] border border-[var(--border)]">
-              <div class="font-bold text-amber-500">1. OpenCode</div>
-              <div class="text-[var(--muted-foreground)]">終端機自主 AI 開發 Agent，依據 Prompt 自動建構與改進程式碼。</div>
+            <div class="p-2 rounded-xl bg-[#181a38] border border-[#2e3366]">
+              <div class="font-bold text-[#FEE75C]">1. OpenCode</div>
+              <div class="text-[#9ea3c7] text-[11px]">終端機自主 AI 開發 Agent，依據 Prompt 自動建構與改進程式碼。</div>
             </div>
-            <div class="p-2 rounded-lg bg-[var(--secondary)] border border-[var(--border)]">
-              <div class="font-bold text-purple-500">2. Ollama + Qwen 2.5</div>
-              <div class="text-[var(--muted-foreground)]">本地模型運行容器與 3B 繁中大腦，負責離線閱讀新聞並生成多維度摘要。</div>
+            <div class="p-2 rounded-xl bg-[#181a38] border border-[#2e3366]">
+              <div class="font-bold text-[#EB459E]">2. Ollama + Qwen 2.5</div>
+              <div class="text-[#9ea3c7] text-[11px]">本地模型運行容器與 3B 繁中大腦，負責離線閱讀新聞並生成多維度摘要。</div>
             </div>
-            <div class="p-2 rounded-lg bg-[var(--secondary)] border border-[var(--border)]">
-              <div class="font-bold text-blue-500">3. Python Flask</div>
-              <div class="text-[var(--muted-foreground)]">後端神經中樞，負責 API 路由、關鍵字清洗與多輪對話記憶。</div>
+            <div class="p-2 rounded-xl bg-[#181a38] border border-[#2e3366]">
+              <div class="font-bold text-[#5865F2]">3. Python Flask</div>
+              <div class="text-[#9ea3c7] text-[11px]">後端神經中樞，負責 API 路由、關鍵字清洗與多輪對話記憶。</div>
             </div>
-            <div class="p-2 rounded-lg bg-[var(--secondary)] border border-[var(--border)]">
-              <div class="font-bold text-emerald-500">4. Google News RSS</div>
-              <div class="text-[var(--muted-foreground)]">即時資訊檢索外掛，提供最新時事，徹底打破模型知識截止限制。</div>
+            <div class="p-2 rounded-xl bg-[#181a38] border border-[#2e3366]">
+              <div class="font-bold text-[#57F287]">4. Google News RSS</div>
+              <div class="text-[#9ea3c7] text-[11px]">即時資訊檢索外掛，提供最新時事，徹底打破模型知識截止限制。</div>
             </div>
-            <div class="p-2 rounded-lg bg-[var(--secondary)] border border-[var(--border)] col-span-2">
-              <div class="font-bold text-cyan-500">5. Git & GitHub</div>
-              <div class="text-[var(--muted-foreground)]">版本控制與雲端保險箱，完整記錄每個功能版本（Commit Traceability）。</div>
+            <div class="p-2 rounded-xl bg-[#181a38] border border-[#2e3366] col-span-2">
+              <div class="font-bold text-[#00d4aa]">5. Git & GitHub</div>
+              <div class="text-[#9ea3c7] text-[11px]">版本控制與雲端保險箱，完整記錄每個功能版本（Commit Traceability）。</div>
             </div>
           </div>
         `
@@ -327,18 +329,18 @@
         title: "RAG 檢索增強生成：為何能解決 AI 幻覺？",
         body: `
           <div class="space-y-2 text-xs leading-relaxed">
-            <p class="text-[var(--muted-foreground)]">
+            <p class="text-[#9ea3c7]">
               <strong>痛點：</strong>大語言模型的知識只停留在訓練時間點，問它「今天的新聞」它會產生幻覺或不知道。
             </p>
-            <div class="p-2.5 rounded-xl bg-[var(--secondary)] border border-[var(--border)] space-y-1">
-              <div class="font-bold text-emerald-600 dark:text-emerald-400">解法：檢索增強生成（RAG 架構）</div>
-              <div class="text-[var(--muted-foreground)]">
+            <div class="p-2.5 rounded-xl bg-[#161834] border border-[#2e3366] space-y-1">
+              <div class="font-bold text-[#57F287]">解法：檢索增強生成（RAG 架構）</div>
+              <div class="text-[#9ea3c7]">
                 1. <strong>檢索（Retrieve）</strong>：自訂關鍵字向 Google News RSS 即時抓取新聞。<br>
                 2. <strong>增強（Augment）</strong>：把當前最新資訊塞入 Prompt 背景知識。<br>
                 3. <strong>生成（Generate）</strong>：交給本地 Qwen 2.5 進行精準摘要。
               </div>
             </div>
-            <p class="text-[var(--muted-foreground)]">
+            <p class="text-[#9ea3c7]">
               💡 <strong>成果：</strong>無需昂貴算力與重訓模型，就能讓本地 AI 擁有掌握當下新聞的能力！
             </p>
           </div>
@@ -350,16 +352,16 @@
         title: "真實工程歷程與 Git 軌跡紀錄",
         body: `
           <div class="space-y-2 text-xs leading-relaxed">
-            <p class="text-[var(--muted-foreground)]">
+            <p class="text-[#9ea3c7]">
               本專案每一次功能迭代均有完整 Commit 紀錄，託管於 GitHub：
             </p>
-            <div class="p-2.5 rounded-xl bg-[var(--secondary)] border border-[var(--border)] font-mono text-[11px] space-y-1.5 text-[var(--muted-foreground)]">
-              <div>🔹 <span class="text-blue-500">c8d5f86</span> : 初版 LINE Bot 模擬系統與基礎新聞摘要</div>
-              <div>🔹 <span class="text-emerald-500">eda851a</span> : 支援自訂關鍵字即時新聞搜尋（停用詞過濾）</div>
-              <div>🔹 <span class="text-purple-500">0d7ced1</span> : 支援多輪上下文記憶與深度新聞分析</div>
-              <div>🔹 <span class="text-amber-500">b001a83</span> : 修復 macOS AirPlay 通訊埠衝突（Port 5001）</div>
+            <div class="p-2.5 rounded-xl bg-[#161834] border border-[#2e3366] font-mono text-[11px] space-y-1.5 text-[#9ea3c7]">
+              <div>🔹 <span class="text-[#5865F2]">c8d5f86</span> : 初版 LINE Bot 模擬系統與基礎新聞摘要</div>
+              <div>🔹 <span class="text-[#57F287]">eda851a</span> : 支援自訂關鍵字即時新聞搜尋（停用詞過濾）</div>
+              <div>🔹 <span class="text-[#EB459E]">0d7ced1</span> : 支援多輪上下文記憶與深度新聞分析</div>
+              <div>🔹 <span class="text-[#FEE75C]">b001a83</span> : 修復 macOS AirPlay 通訊埠衝突（Port 5001）</div>
             </div>
-            <p class="text-[var(--muted-foreground)]">
+            <p class="text-[#9ea3c7]">
               證明每一次的功能升級與問題排除，都有完整的工程透明度可受檢驗。
             </p>
           </div>
@@ -371,17 +373,17 @@
         title: "總結：從專案中學到的重要能力",
         body: `
           <div class="space-y-2 text-xs leading-relaxed">
-            <div class="p-2 rounded-xl bg-[var(--secondary)] border border-[var(--border)]">
-              <div class="font-bold text-emerald-600 dark:text-emerald-400">1. AI 原生開發新思維（雙 Agent 協同）</div>
-              <div class="text-[var(--muted-foreground)]">體會身為「產品經理」如何指揮 Antigravity 與 OpenCode 實現複雜全端系統。</div>
+            <div class="p-2 rounded-xl bg-[#181a38] border border-[#2e3366]">
+              <div class="font-bold text-[#5865F2]">1. AI 原生開發新思維（雙 Agent 協同）</div>
+              <div class="text-[#9ea3c7] text-[11px]">體會身為「產品經理」如何指揮 Antigravity 與 OpenCode 實現複雜全端系統。</div>
             </div>
-            <div class="p-2 rounded-xl bg-[var(--secondary)] border border-[var(--border)]">
-              <div class="font-bold text-emerald-600 dark:text-emerald-400">2. 本地開源大模型與隱私保護</div>
-              <div class="text-[var(--muted-foreground)]">驗證本機 3B 模型在 Mac 上的流暢度，證明無需付費商業 API 也能建立高品質應用。</div>
+            <div class="p-2 rounded-xl bg-[#181a38] border border-[#2e3366]">
+              <div class="font-bold text-[#EB459E]">2. 本地開源大模型與隱私保護</div>
+              <div class="text-[#9ea3c7] text-[11px]">驗證本機 3B 模型在 Mac 上的流暢度，證明無需付費商業 API 也能建立高品質應用。</div>
             </div>
-            <div class="p-2 rounded-xl bg-[var(--secondary)] border border-[var(--border)]">
-              <div class="font-bold text-emerald-600 dark:text-emerald-400">3. RAG 實時檢索與多輪對話落地</div>
-              <div class="text-[var(--muted-foreground)]">完整理解外部資料檢索如何賦予 AI 實時感知能力，成功交付高完成度專案！</div>
+            <div class="p-2 rounded-xl bg-[#181a38] border border-[#2e3366]">
+              <div class="font-bold text-[#57F287]">3. RAG 實時檢索與多輪對話落地</div>
+              <div class="text-[#9ea3c7] text-[11px]">完整理解外部資料檢索如何賦予 AI 實時感知能力，成功交付高完成度專案！</div>
             </div>
           </div>
         `
@@ -399,7 +401,7 @@
 
     slides.forEach((_, i) => {
       const dot = document.createElement("button");
-      dot.className = "w-2 h-2 rounded-full transition-all flex-shrink-0 " + (i === 0 ? "bg-emerald-500 w-3.5" : "bg-[var(--border)]");
+      dot.className = "w-2 h-2 rounded-full transition-all flex-shrink-0 " + (i === 0 ? "bg-[#5865F2] w-3.5 shadow-sm shadow-[#5865F2]" : "bg-[#2b2f5c]");
       dot.addEventListener("click", () => goToSlide(i));
       dotContainerEl.appendChild(dot);
     });
@@ -408,9 +410,9 @@
       const dots = dotContainerEl.querySelectorAll("button");
       dots.forEach((dot, i) => {
         if (i === currentSlide) {
-          dot.className = "h-2 rounded-full transition-all bg-emerald-500 w-3.5 flex-shrink-0";
+          dot.className = "h-2 rounded-full transition-all bg-[#5865F2] w-3.5 flex-shrink-0 shadow-sm shadow-[#5865F2]";
         } else {
-          dot.className = "w-2 h-2 rounded-full transition-all bg-[var(--border)] hover:bg-[var(--muted-foreground)] flex-shrink-0";
+          dot.className = "w-2 h-2 rounded-full transition-all bg-[#2b2f5c] hover:bg-[#5865F2]/50 flex-shrink-0";
         }
       });
     }
@@ -423,10 +425,10 @@
       slideContentEl.innerHTML = `
         <div class="flex flex-col justify-center">
           <div class="flex items-center justify-between mb-1.5">
-            <span class="text-xs font-mono font-semibold tracking-wider text-emerald-600 dark:text-emerald-400 uppercase">${s.tag}</span>
-            <span class="text-[10px] font-semibold bg-[var(--secondary)] text-[var(--secondary-foreground)] px-2 py-0.5 rounded-md border border-[var(--border)]">${s.badge}</span>
+            <span class="text-xs font-mono font-semibold tracking-wider text-[#7983F5] uppercase">${s.tag}</span>
+            <span class="text-[10px] font-semibold bg-[#1e2246] text-[#c4c9ff] px-2 py-0.5 rounded-md border border-[#3f4585]">${s.badge}</span>
           </div>
-          <h3 class="text-sm sm:text-base font-bold text-[var(--foreground)] mb-2 leading-snug">${s.title}</h3>
+          <h3 class="text-sm sm:text-base font-bold text-white mb-2 leading-snug">${s.title}</h3>
           ${s.body}
         </div>
       `;
@@ -434,10 +436,10 @@
       prevBtn.disabled = currentSlide === 0;
       if (currentSlide === slides.length - 1) {
         nextBtn.innerHTML = "<span>回到首頁</span> ↺";
-        nextBtn.className = "px-3.5 py-1 text-xs font-semibold rounded-lg bg-emerald-700 text-white hover:bg-emerald-800 transition flex items-center gap-1";
+        nextBtn.className = "px-3.5 py-1 text-xs font-bold rounded-lg bg-[#57F287] text-slate-900 hover:bg-[#45d972] shadow-md shadow-[#57F287]/30 transition flex items-center gap-1";
       } else {
         nextBtn.innerHTML = "<span>下一頁</span> →";
-        nextBtn.className = "px-3.5 py-1 text-xs font-semibold rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition flex items-center gap-1";
+        nextBtn.className = "px-3.5 py-1 text-xs font-bold rounded-lg bg-[#5865F2] text-white hover:bg-[#4752C4] shadow-md shadow-[#5865F2]/40 transition flex items-center gap-1";
       }
 
       updateDots();
