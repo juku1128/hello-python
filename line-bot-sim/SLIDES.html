@@ -5,35 +5,31 @@
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
 </head>
 <body class="bg-transparent text-[var(--foreground)] antialiased p-2 select-none">
-  <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-5 shadow-lg max-w-xl mx-auto flex flex-col justify-between" style="min-height: 450px;">
+  <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-5 shadow-lg max-w-xl mx-auto flex flex-col justify-between" style="min-height: 460px;">
     
-    <!-- Header: 簡報標題與進度條 -->
+    <!-- 頂部資訊與進度條 -->
     <div class="border-b border-[var(--border)] pb-3">
       <div class="flex items-center justify-between text-xs text-[var(--muted-foreground)] mb-1.5">
         <span class="font-medium flex items-center gap-1.5">
           <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          LINE Bot × 本地 AI 新聞系統 · 新手入門指南
+          期末專案報告 · LINE Bot 本地開源 AI 即時新聞系統
         </span>
         <span id="slideCounter" class="font-mono bg-[var(--secondary)] text-[var(--secondary-foreground)] px-2 py-0.5 rounded-full font-semibold">1 / 8</span>
       </div>
-      <!-- 進度條 -->
       <div class="w-full bg-[var(--secondary)] h-1.5 rounded-full overflow-hidden">
         <div id="progressBar" class="bg-emerald-500 h-full transition-all duration-300 ease-out" style="width: 12.5%;"></div>
       </div>
     </div>
 
-    <!-- Slide Content Area -->
-    <div id="slideContent" class="py-4 flex-1 flex flex-col justify-center">
-      <!-- 內容會透過 JavaScript 動態渲染 -->
-    </div>
+    <!-- 簡報內容本體 -->
+    <div id="slideContent" class="py-3 flex-1 flex flex-col justify-center"></div>
 
-    <!-- Footer: 控制按鈕 -->
+    <!-- 底部切換按鈕 -->
     <div class="border-t border-[var(--border)] pt-3 flex items-center justify-between">
       <button id="prevBtn" class="px-3.5 py-1.5 text-xs font-medium rounded-lg border border-[var(--border)] bg-[var(--secondary)] text-[var(--secondary-foreground)] hover:opacity-80 transition disabled:opacity-30 disabled:cursor-not-allowed">
         ← 上一頁
       </button>
 
-      <!-- 快速指示點點 -->
       <div id="dotContainer" class="flex gap-1.5"></div>
 
       <button id="nextBtn" class="px-4 py-1.5 text-xs font-semibold rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition flex items-center gap-1">
@@ -46,188 +42,208 @@
   <script>
     const slides = [
       {
-        tag: "01 · 專案起點",
-        title: "什麼是「本地 AI 新聞 LINE Bot」？",
-        badge: "核心目標",
+        tag: "01 · 專案首頁",
+        badge: "成果報告",
+        title: "LINE Bot × 本地開源 AI 即時新聞系統",
         body: `
           <div class="space-y-3">
-            <p class="text-sm text-[var(--muted-foreground)] leading-relaxed">
-              這是一個在你的電腦<strong>完全免費、保護隱私</strong>運行的智慧新聞助理。它解決了兩大難題：
-            </p>
-            <div class="grid grid-cols-2 gap-2.5">
-              <div class="p-3 rounded-xl bg-[var(--secondary)] border border-[var(--border)]">
-                <div class="text-lg mb-1">🦙 本地運算</div>
-                <div class="text-xs text-[var(--muted-foreground)]">不用付費買 OpenAI API，用本機 Ollama 跑 Qwen 2.5 開源模型。</div>
-              </div>
-              <div class="grid p-3 rounded-xl bg-[var(--secondary)] border border-[var(--border)]">
-                <div class="text-lg mb-1">📰 即時聯網</div>
-                <div class="text-xs text-[var(--muted-foreground)]">外掛 Google News 即時搜尋，讓 AI 永遠知道今天剛剛發生的新聞！</div>
-              </div>
+            <div class="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs leading-relaxed">
+              <span class="font-bold text-emerald-600 dark:text-emerald-400">🎯 專案核心題目：</span><br>
+              基於 <strong>OpenCode</strong> 結對開發、<strong>Ollama 本地開源大模型</strong>與 <strong>RAG 即時新聞檢索</strong>之 LINE 智慧助理。
             </div>
-            <div class="text-xs text-emerald-600 dark:text-emerald-400 font-medium bg-emerald-500/10 p-2 rounded-lg">
-              ✨ 最棒的是：你不需要硬背代碼，而是透過 AI 指揮官的模式完成它！
+            <div class="grid grid-cols-2 gap-2 text-xs">
+              <div class="p-2.5 rounded-lg bg-[var(--secondary)] border border-[var(--border)]">
+                <div class="font-bold text-blue-500">👨‍💻 開發方式</div>
+                <div class="text-[var(--muted-foreground)]">AI 原生開發（OpenCode Agent）</div>
+              </div>
+              <div class="p-2.5 rounded-lg bg-[var(--secondary)] border border-[var(--border)]">
+                <div class="font-bold text-purple-500">🦙 本地模型</div>
+                <div class="text-[var(--muted-foreground)]">Ollama · Qwen 2.5 (3B)</div>
+              </div>
+              <div class="p-2.5 rounded-lg bg-[var(--secondary)] border border-[var(--border)]">
+                <div class="font-bold text-emerald-500">📰 新聞架構</div>
+                <div class="text-[var(--muted-foreground)]">Google News RSS 動態檢索</div>
+              </div>
+              <div class="p-2.5 rounded-lg bg-[var(--secondary)] border border-[var(--border)]">
+                <div class="font-bold text-amber-500">💬 使用者介面</div>
+                <div class="text-[var(--muted-foreground)]">LINE 擬真行動版 Web 系統</div>
+              </div>
             </div>
           </div>
         `
       },
       {
-        tag: "02 · 觀念顛覆",
-        title: "AI 時代的新角色：你就是「產品經理」",
-        badge: "開發模式",
+        tag: "02 · 作業核對",
+        badge: "100% 達成",
+        title: "是否符合老師的作業要求？（逐條驗證）",
         body: `
-          <div class="space-y-3 text-xs leading-relaxed">
-            <div class="p-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-[var(--foreground)]">
-              <span class="font-bold text-red-500">❌ 傳統舊思維：</span>
-              從頭手打 Python 語法、配置環境、背套件名稱，遇到 Bug 抓破頭皮。
+          <div class="space-y-2 text-xs leading-relaxed">
+            <div class="p-2 rounded-lg bg-[var(--secondary)] border border-[var(--border)] flex items-start gap-2">
+              <span class="text-emerald-500 font-bold">✅</span>
+              <div>
+                <span class="font-bold">要求 1：請用 OpenCode</span><br>
+                <span class="text-[var(--muted-foreground)]">完成：全程以 OpenCode 指揮建置專案，歷經初始架構、關鍵字搜尋、多輪對話三次迭代。</span>
+              </div>
             </div>
-            <div class="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-[var(--foreground)]">
-              <span class="font-bold text-emerald-600 dark:text-emerald-400">✅ 現代新範式（AI 原生開發）：</span>
-              你當<strong>指揮官（發想功能）</strong>，讓 <strong>OpenCode（資深工程師）</strong> 動手寫代碼，你專注於需求檢驗！
+            <div class="p-2 rounded-lg bg-[var(--secondary)] border border-[var(--border)] flex items-start gap-2">
+              <span class="text-emerald-500 font-bold">✅</span>
+              <div>
+                <span class="font-bold">要求 2：使用本地開源模型</span><br>
+                <span class="text-[var(--muted-foreground)]">完成：採用 Ollama 本機運行 Qwen 2.5 (3B)，全程離線推理，不花費外部 API，保護資料隱私。</span>
+              </div>
             </div>
-            <div class="p-2.5 rounded-xl bg-[var(--secondary)] text-[var(--muted-foreground)]">
-              💡 <strong>實證：</strong>今天所有的後端邏輯與網頁代碼，都是你用幾句繁體中文指示就自動產生的！
+            <div class="p-2 rounded-lg bg-[var(--secondary)] border border-[var(--border)] flex items-start gap-2">
+              <span class="text-emerald-500 font-bold">✅</span>
+              <div>
+                <span class="font-bold">要求 3：完成 LINE Bot</span><br>
+                <span class="text-[var(--muted-foreground)]">完成：打造擬真度 100% 的 LINE 手機版聊天室系統（綠色主題/氣泡/打字動畫/快捷按鈕）。</span>
+              </div>
+            </div>
+            <div class="p-2 rounded-lg bg-[var(--secondary)] border border-[var(--border)] flex items-start gap-2">
+              <span class="text-emerald-500 font-bold">✅</span>
+              <div>
+                <span class="font-bold">要求 4：能否用 AI 找到最新新聞資訊？</span><br>
+                <span class="text-[var(--muted-foreground)]">超額完成：實作 RAG 檢索增強生成，不僅能查即時時事，還支援自訂關鍵字與二階段深度摘要！</span>
+              </div>
             </div>
           </div>
         `
       },
       {
-        tag: "03 · 四大角色",
-        title: "系統的「眼、腦、口、手」分工",
-        badge: "系統分工",
+        tag: "03 · 系統架構",
+        badge: "技術流程",
+        title: "系統程式架構圖（運作流程）",
+        body: `
+          <div class="space-y-2 text-xs">
+            <div class="p-2.5 rounded-xl bg-[var(--secondary)] border border-[var(--border)] font-mono text-[11px] leading-relaxed space-y-1">
+              <div class="text-emerald-600 dark:text-emerald-400 font-bold">【前端】LINE 擬真介面 (index.html)</div>
+              <div class="pl-3 text-[var(--muted-foreground)]">↓ 使用者輸入：「幫我查台積電新聞」 (HTTP POST /api/chat)</div>
+              <div class="text-blue-500 font-bold">【後端】Flask 伺服器 (app.py)</div>
+              <div class="pl-3 text-[var(--muted-foreground)]">↓ 正則過濾停用詞 ➔ 萃取關鍵字【台積電】</div>
+              <div class="text-amber-500 font-bold">【資訊層】Google News RSS</div>
+              <div class="pl-3 text-[var(--muted-foreground)]">↓ 即時抓取最新 5 則標題與內容 ➔ 存入 Session 記憶體</div>
+              <div class="text-purple-500 font-bold">【AI 推理】本機 Ollama API (qwen2.5:3b)</div>
+              <div class="pl-3 text-[var(--muted-foreground)]">↓ Prompt 注入新聞資料 ➔ 條列重點摘要 ➔ 彈出 LINE 氣泡！</div>
+            </div>
+          </div>
+        `
+      },
+      {
+        tag: "04 · 工具清單",
+        badge: "技術堆疊",
+        title: "使用到的程式工具、模型及其個別作用",
         body: `
           <div class="grid grid-cols-2 gap-2 text-xs">
-            <div class="p-2.5 rounded-xl border border-[var(--border)] bg-[var(--secondary)]">
-              <div class="font-bold text-blue-500 mb-1">👀 眼睛 · Google News</div>
-              <div class="text-[var(--muted-foreground)]">負責上網抓即時新聞資料（因為本地大模型平常不上網，需要它給資料）。</div>
+            <div class="p-2 rounded-lg bg-[var(--secondary)] border border-[var(--border)]">
+              <div class="font-bold text-amber-500">1. OpenCode</div>
+              <div class="text-[var(--muted-foreground)]">終端機自主 AI 開發 Agent，負責依 Prompt 撰寫與重構專案程式碼。</div>
             </div>
-            <div class="p-2.5 rounded-xl border border-[var(--border)] bg-[var(--secondary)]">
-              <div class="font-bold text-purple-500 mb-1">🧠 大腦 · Ollama (Qwen)</div>
-              <div class="text-[var(--muted-foreground)]">負責閱讀抓回來的新聞，濃縮消化成易讀的繁體中文條列重點。</div>
+            <div class="p-2 rounded-lg bg-[var(--secondary)] border border-[var(--border)]">
+              <div class="font-bold text-purple-500">2. Ollama + Qwen 2.5</div>
+              <div class="text-[var(--muted-foreground)]">本地模型運行容器與 3B 繁中神經網路大腦，負責新聞閱讀與多維度摘要。</div>
             </div>
-            <div class="p-2.5 rounded-xl border border-[var(--border)] bg-[var(--secondary)]">
-              <div class="font-bold text-emerald-500 mb-1">💬 嘴巴 · 擬真 LINE 網頁</div>
-              <div class="text-[var(--muted-foreground)]">擬真的手機對話視窗，彈出熟悉的綠色氣泡，與使用者互動。</div>
+            <div class="p-2 rounded-lg bg-[var(--secondary)] border border-[var(--border)]">
+              <div class="font-bold text-blue-500">3. Python & Flask</div>
+              <div class="text-[var(--muted-foreground)]">後端核心神經中樞，負責 API 路由、關鍵字清洗與多輪上下文狀態記憶。</div>
             </div>
-            <div class="p-2.5 rounded-xl border border-[var(--border)] bg-[var(--secondary)]">
-              <div class="font-bold text-amber-500 mb-1">⚙️ 神經中樞 · Flask 後端</div>
-              <div class="text-[var(--muted-foreground)]">串起一切的大總管（Python），接收訊息、查新聞、送 AI、回傳結果。</div>
+            <div class="p-2 rounded-lg bg-[var(--secondary)] border border-[var(--border)]">
+              <div class="font-bold text-emerald-500">4. Google News RSS</div>
+              <div class="text-[var(--muted-foreground)]">即時資訊檢索外掛，提供毫秒級最新時事，徹底打破模型知識截止限制。</div>
+            </div>
+            <div class="p-2 rounded-lg bg-[var(--secondary)] border border-[var(--border)] col-span-2">
+              <div class="font-bold text-cyan-500">5. Git & GitHub</div>
+              <div class="text-[var(--muted-foreground)]">版本控制與工程軌跡存檔，完整記錄每個功能版本（Commit Traceability）。</div>
             </div>
           </div>
         `
       },
       {
-        tag: "04 · 關鍵黑科技",
-        title: "為什麼 AI 能知道「今天」的新聞？",
-        badge: "RAG 概念",
+        tag: "05 · 核心突破 1",
+        badge: "RAG 實踐",
+        title: "如何讓 AI 找到最新新聞？（RAG 原理解析）",
         body: `
           <div class="space-y-2 text-xs leading-relaxed">
             <p class="text-[var(--muted-foreground)]">
-              很多人誤以為 AI 無所不知，但所有大模型的知識都停留在訓練那一刻。
+              <strong>問題癥結：</strong>大語言模型（LLM）的知識固定於訓練結束點，即使問它「今天的新聞」，本地模型也會產生幻覺或不知道。
             </p>
-            <div class="p-3 rounded-xl bg-[var(--secondary)] border border-[var(--border)] space-y-2">
-              <div class="font-semibold text-emerald-600 dark:text-emerald-400">這就是業界最熱門的「RAG（檢索增強生成）」！</div>
-              <div class="flex items-center gap-1.5 text-[var(--muted-foreground)]">
-                <span>① 先向外部資料庫抓取最新資料</span>
-                <span>➔</span>
-                <span>② 把資料塞進 Prompt 背景</span>
-                <span>➔</span>
-                <span>③ 請 AI 根據這份資料做摘要</span>
+            <div class="p-2.5 rounded-xl bg-[var(--secondary)] border border-[var(--border)] space-y-1">
+              <div class="font-bold text-emerald-600 dark:text-emerald-400">解法：檢索增強生成（Retrieval-Augmented Generation）</div>
+              <div class="text-[var(--muted-foreground)]">
+                1. <strong>自訂關鍵字提取</strong>：從使用者句子中分離出核心主詞（如「台積電」）。<br>
+                2. <strong>動態檢索</strong>：向 Google News RSS 取得即時新聞。<br>
+                3. <strong>上下文注入</strong>：把即時新聞內容以 Context 形式交給 Ollama 整理。
               </div>
             </div>
             <p class="text-[var(--muted-foreground)]">
-              🎯 <strong>結論：</strong>本地模型不需要龐大連網算力，只要有「外掛搜尋眼睛」，就能產出準確的即時新聞！
+              💡 <strong>成果：</strong>無需昂貴算力與重訓模型，就能讓本地 AI 擁有掌握當下新聞的能力！
             </p>
           </div>
         `
       },
       {
-        tag: "05 · 進階亮點",
-        title: "自訂關鍵字搜尋：它是怎麼實現的？",
-        badge: "動態搜尋",
-        body: `
-          <div class="space-y-2 text-xs leading-relaxed">
-            <p class="text-[var(--muted-foreground)]">
-              使用者說：「幫我查<span class="text-amber-500 font-bold">台積電</span>最新新聞」
-            </p>
-            <div class="p-2.5 rounded-xl bg-[var(--secondary)] border border-[var(--border)] font-mono text-[11px] text-[var(--muted-foreground)] space-y-1">
-              <div>1. 過濾停用詞：扣除「幫我查」、「最新」、「新聞」</div>
-              <div class="text-emerald-600 dark:text-emerald-400 font-bold">2. 抓出純關鍵字：【台積電】</div>
-              <div>3. 拼成動態網址：https://news.google.com/rss/search?q=台積電</div>
-            </div>
-            <p class="text-[var(--muted-foreground)]">
-              無論使用者問<strong>黃仁勳、地震、大谷翔平、星宇航空</strong>，系統都能 100% 動態即時抓取！
-            </p>
-          </div>
-        `
-      },
-      {
-        tag: "06 · 殺手級功能",
-        title: "多輪對話：點「第 2 則」深入剖析",
-        badge: "上下文記憶",
+        tag: "06 · 核心突破 2",
+        badge: "多輪對話",
+        title: "延伸功能：多輪深度摘要（Drill-down）",
+        badge: "創新亮點",
         body: `
           <div class="space-y-2.5 text-xs leading-relaxed">
+            <p class="text-[var(--muted-foreground)]">
+              不僅只有單純列出新聞，更實作了<strong>有狀態（Stateful）的多輪互動</strong>：
+            </p>
             <div class="grid grid-cols-2 gap-2">
-              <div class="p-2.5 rounded-xl bg-[var(--secondary)] border border-[var(--border)]">
-                <span class="font-bold text-blue-500">第一階段 · 瀏覽概覽</span>
-                <p class="text-[var(--muted-foreground)] mt-1">條列 1~5 則新聞亮點，下方跳出【📖 深入看第 1~5 則】按鈕。</p>
+              <div class="p-2 rounded-lg bg-[var(--secondary)] border border-[var(--border)]">
+                <div class="font-bold text-blue-500">第 1 輪：新聞標題概覽</div>
+                <div class="text-[var(--muted-foreground)]">回傳 5 則最新時事重點，前端自動動態生成【📖 深入看第 1~5 則】快捷按鈕。</div>
               </div>
-              <div class="p-2.5 rounded-xl bg-[var(--secondary)] border border-[var(--border)]">
-                <span class="font-bold text-purple-500">第二階段 · 深度剖析</span>
-                <p class="text-[var(--muted-foreground)] mt-1">後端記住剛才的清單，點擊「2」後讓 AI 生成 4 大面向深度報告！</p>
+              <div class="p-2 rounded-lg bg-[var(--secondary)] border border-[var(--border)]">
+                <div class="font-bold text-purple-500">第 2 輪：深度 4 大面向報告</div>
+                <div class="text-[var(--muted-foreground)]">點擊按鈕或輸入「2」，後端鎖定該則新聞，產出深度剖析：</div>
               </div>
             </div>
-            <div class="p-2 rounded-xl bg-purple-500/10 border border-purple-500/20 text-[var(--foreground)] text-[11px]">
-              📌 事件核心 ｜ 🔍 背景經過 ｜ 💡 關鍵影響 ｜ 🔗 新聞來源連結
+            <div class="p-2 rounded-lg bg-purple-500/10 border border-purple-500/20 text-[11px] text-[var(--foreground)]">
+              📌 事件核心 ｜ 🔍 詳細背景與經過 ｜ 💡 關鍵影響與展望 ｜ 🔗 新聞來源連結
             </div>
           </div>
         `
       },
       {
-        tag: "07 · 工具對照",
-        title: "工具兵器譜總覽",
-        badge: "技能對照",
-        body: `
-          <div class="grid grid-cols-3 gap-1.5 text-[11px]">
-            <div class="p-2 rounded-lg bg-[var(--secondary)] border border-[var(--border)]">
-              <div class="font-bold text-amber-500">OpenCode</div>
-              <div class="text-[var(--muted-foreground)]">終端機 AI 結對工程師，負責自動寫程式碼。</div>
-            </div>
-            <div class="p-2 rounded-lg bg-[var(--secondary)] border border-[var(--border)]">
-              <div class="font-bold text-purple-500">Ollama</div>
-              <div class="text-[var(--muted-foreground)]">本地模型運行容器，離線提供強大推理。</div>
-            </div>
-            <div class="p-2 rounded-lg bg-[var(--secondary)] border border-[var(--border)]">
-              <div class="font-bold text-blue-500">Python Flask</div>
-              <div class="text-[var(--muted-foreground)]">後端伺服器，負責邏輯調度與記憶。</div>
-            </div>
-            <div class="p-2 rounded-lg bg-[var(--secondary)] border border-[var(--border)]">
-              <div class="font-bold text-emerald-500">Google RSS</div>
-              <div class="text-[var(--muted-foreground)]">免費、免金鑰的即時新聞資料庫。</div>
-            </div>
-            <div class="p-2 rounded-lg bg-[var(--secondary)] border border-[var(--border)]">
-              <div class="font-bold text-rose-500">LINE 擬真介面</div>
-              <div class="text-[var(--muted-foreground)]">免審核、免證件的展示門面。</div>
-            </div>
-            <div class="p-2 rounded-lg bg-[var(--secondary)] border border-[var(--border)]">
-              <div class="font-bold text-cyan-500">Git & GitHub</div>
-              <div class="text-[var(--muted-foreground)]">版本控制與雲端保險箱，紀錄每步成長。</div>
-            </div>
-          </div>
-        `
-      },
-      {
-        tag: "08 · 總結報告",
-        title: "向老師報告的加分金句指南",
-        badge: "總結答辯",
+        tag: "07 · 開發歷程",
+        badge: "工程規範",
+        title: "真實工程歷程與 Git 軌跡紀錄",
         body: `
           <div class="space-y-2 text-xs leading-relaxed">
+            <p class="text-[var(--muted-foreground)]">
+              本專案全程嚴格遵守現代軟體工程規範，程式碼均妥善託管於 GitHub：
+            </p>
+            <div class="p-2.5 rounded-xl bg-[var(--secondary)] border border-[var(--border)] font-mono text-[11px] space-y-1.5 text-[var(--muted-foreground)]">
+              <div>🔹 <span class="text-blue-500">c8d5f86</span> : 初版 LINE Bot 模擬系統與基礎新聞摘要</div>
+              <div>🔹 <span class="text-emerald-500">eda851a</span> : 支援自訂關鍵字即時新聞搜尋（停用詞過濾）</div>
+              <div>🔹 <span class="text-purple-500">0d7ced1</span> : 支援多輪上下文記憶與深度新聞分析</div>
+              <div>🔹 <span class="text-amber-500">b001a83</span> : 修復 macOS AirPlay 通訊埠衝突（Port 5001）</div>
+            </div>
+            <p class="text-[var(--muted-foreground)]">
+              證明每一次的功能迭代與問題排除，都有完整的版本歷程可受檢驗。
+            </p>
+          </div>
+        `
+      },
+      {
+        tag: "08 · 專案總結",
+        badge: "報告結語",
+        title: "總結：從專案中學到的重要能力",
+        body: `
+          <div class="space-y-2.5 text-xs leading-relaxed">
             <div class="p-2.5 rounded-xl bg-[var(--secondary)] border border-[var(--border)]">
-              <div class="font-bold text-emerald-600 dark:text-emerald-400">Q1. 為什麼能在本地掌握最新時事？</div>
-              <div class="text-[var(--muted-foreground)]">「我們採用 RAG 架構，以 Google News RSS 彌補模型沒有連網知識的限制，兼顧即時性與本機資料隱私。」</div>
+              <div class="font-bold text-emerald-600 dark:text-emerald-400">1. AI 原生開發新思維</div>
+              <div class="text-[var(--muted-foreground)]">體會身為「產品規劃者」如何透過精確的 Prompt 指揮 OpenCode Agent 實現複雜後端與前端架構。</div>
             </div>
             <div class="p-2.5 rounded-xl bg-[var(--secondary)] border border-[var(--border)]">
-              <div class="font-bold text-emerald-600 dark:text-emerald-400">Q2. 這個系統如何避免單純死板的一問一答？</div>
-              <div class="text-[var(--muted-foreground)]">「我們設計了有狀態的 Session 記憶機制，支援多輪對話，能從巨觀新聞條列一鍵切入微觀深度剖析。」</div>
+              <div class="font-bold text-emerald-600 dark:text-emerald-400">2. 本地開源大模型與隱私保護</div>
+              <div class="text-[var(--muted-foreground)]">驗證本機 3B 模型在 Mac 上的流暢度，證明無需付費商業 API 也能建立高可用性對話系統。</div>
+            </div>
+            <div class="p-2.5 rounded-xl bg-[var(--secondary)] border border-[var(--border)]">
+              <div class="font-bold text-emerald-600 dark:text-emerald-400">3. RAG 與多輪對話架構之落地</div>
+              <div class="text-[var(--muted-foreground)]">完整理解外部資料檢索如何賦予 AI 實時感知能力，成功交付一套高完成度的智慧應用！</div>
             </div>
           </div>
         `
@@ -243,7 +259,6 @@
     const nextBtn = document.getElementById("nextBtn");
     const dotContainerEl = document.getElementById("dotContainer");
 
-    // 建立小圓點
     slides.forEach((_, i) => {
       const dot = document.createElement("button");
       dot.className = "w-2 h-2 rounded-full transition-all " + (i === 0 ? "bg-emerald-500 w-4" : "bg-[var(--border)]");
@@ -268,19 +283,19 @@
       progressBarEl.style.width = `${((currentSlide + 1) / slides.length) * 100}%`;
 
       slideContentEl.innerHTML = `
-        <div class="animate-fade-in flex flex-col justify-center">
+        <div class="flex flex-col justify-center">
           <div class="flex items-center justify-between mb-2">
             <span class="text-xs font-mono font-semibold tracking-wider text-emerald-600 dark:text-emerald-400 uppercase">${s.tag}</span>
             <span class="text-[10px] font-semibold bg-[var(--secondary)] text-[var(--secondary-foreground)] px-2 py-0.5 rounded-md border border-[var(--border)]">${s.badge}</span>
           </div>
-          <h3 class="text-base font-bold text-[var(--foreground)] mb-3 leading-snug">${s.title}</h3>
+          <h3 class="text-base font-bold text-[var(--foreground)] mb-2.5 leading-snug">${s.title}</h3>
           ${s.body}
         </div>
       `;
 
       prevBtn.disabled = currentSlide === 0;
       if (currentSlide === slides.length - 1) {
-        nextBtn.innerHTML = "<span>完成閱讀</span> ✓";
+        nextBtn.innerHTML = "<span>回到首頁</span> ↺";
         nextBtn.className = "px-4 py-1.5 text-xs font-semibold rounded-lg bg-emerald-700 text-white hover:bg-emerald-800 transition flex items-center gap-1";
       } else {
         nextBtn.innerHTML = "<span>下一頁</span> →";
@@ -302,11 +317,10 @@
       if (currentSlide < slides.length - 1) {
         goToSlide(currentSlide + 1);
       } else {
-        goToSlide(0); // 循環
+        goToSlide(0);
       }
     });
 
-    // 鍵盤左右鍵切換
     window.addEventListener("keydown", (e) => {
       if (e.key === "ArrowLeft") goToSlide(currentSlide - 1);
       if (e.key === "ArrowRight") goToSlide(currentSlide + 1);
