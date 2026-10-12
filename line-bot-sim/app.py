@@ -37,6 +37,10 @@ STOPWORDS = [
     "news", "最新消息",
 ]
 
+LAST_NEWS_ITEMS = []
+
+DEEP_TIP = "\n\n💡 想要進一步了解哪一則？請直接輸入編號（例如『2』），我會為您做深度詳細摘要！"
+
 
 def ollama_generate(prompt, system=None):
     payload = {
@@ -76,6 +80,16 @@ def extract_keyword(text):
     if not keyword or keyword.lower() in TOPIC_KEYWORDS_FLAT:
         return None
     return keyword
+
+
+def parse_deep_query(text):
+    stripped = (text or "").strip()
+    match = re.search(r"第\s*([0-9]+)\s*則", stripped)
+    if match:
+        return int(match.group(1))
+    if re.fullmatch(r"[0-9]+", stripped):
+        return int(stripped)
+    return None
 
 
 def strip_html(text):
@@ -141,7 +155,32 @@ def summarize_news(items, keyword=None):
             "每則用一行、前面加上 emoji 或數字，最後加上一句溫暖的結語。"
             "不要逐字複製原文，請幫我濃縮成 1~2 句摘要。"
         )
-    return ollama_generate(prompt, system)
+    return ollama_generate(prompt, system) + DEEP_TIP
+
+
+def deep_analyze(item, index):
+    system = (
+        "你是「新聞小助手」，一個親切的 LINE 聊天機器人，"
+        "擅長把新聞整理成深入淺出、有條理的深度分析報告。"
+        "請一律使用繁體中文，語氣親切專業，格式清楚好讀。"
+    )
+    prompt = (
+        f"請針對以下這則新聞，撰寫一份深度詳細分析報告：\n\n"
+        f"標題：{item['title']}\n"
+        f"摘要：{item['summary']}\n"
+        f"來源：{item.get('source') or '（未提供）'}\n"
+        f"連結：{item.get('link') or '（未提供）'}\n"
+        f"發布時間：{item.get('published') or '（未提供）'}\n\n"
+        "請務必使用以下四個標題分段輸出，並保留標題文字與 emoji：\n"
+        "📌【事件核心】\n"
+        "🔍【詳細背景與經過】\n"
+        "💡【關鍵影響與展望】\n"
+        "🔗【新聞來源與連結】\n\n"
+        "每個段落請用繁體中文寫 2~4 句，內容具體、有條理。"
+        "在【新聞來源與連結】段落中請附上新聞來源與連結網址。"
+    )
+    reply = ollama_generate(prompt, system)
+    return f"📖 第 {index} 則深度分析\n\n{reply}"
 
 
 def chat_reply(user_text):
@@ -160,6 +199,8 @@ def index():
 
 @app.route("/api/chat", methods=["POST"])
 def chat():
+    global LAST_NEWS_ITEMS
+
     data = request.get_json(silent=True) or {}
     message = (data.get("message") or "").strip()
 
@@ -167,11 +208,29 @@ def chat():
         return jsonify({"reply": "你好像沒有輸入內容喔～再說一次好嗎？", "type": "chat"})
 
     try:
+        deep_index = parse_deep_query(message)
+        if deep_index is not None:
+            if not LAST_NEWS_ITEMS:
+                return jsonify({
+                    "reply": "請先查詢新聞主題，再選擇想深入了解的編號喔！",
+                    "type": "chat",
+                })
+            if deep_index < 1 or deep_index > len(LAST_NEWS_ITEMS):
+                return jsonify({
+                    "reply": f"我這邊只有 {len(LAST_NEWS_ITEMS)} 則新聞喔，請輸入 1~{len(LAST_NEWS_ITEMS)} 之間的編號～",
+                    "type": "chat",
+                })
+            item = LAST_NEWS_ITEMS[deep_index - 1]
+            reply = deep_analyze(item, deep_index)
+            return jsonify({"reply": reply, "type": "deep", "index": deep_index})
+
         if is_news_query(message):
             keyword = extract_keyword(message)
             if keyword:
                 items = fetch_news_by_keyword(keyword, limit=5)
                 reply = summarize_news(items, keyword=keyword)
+                if items:
+                    LAST_NEWS_ITEMS = items
                 return jsonify({
                     "reply": reply,
                     "type": "news",
@@ -182,6 +241,8 @@ def chat():
             topic = pick_feed(message)
             items = fetch_news(topic, limit=5)
             reply = summarize_news(items)
+            if items:
+                LAST_NEWS_ITEMS = items
             return jsonify({
                 "reply": reply,
                 "type": "news",

@@ -323,6 +323,17 @@
       if (t) t.remove();
     }
 
+    function showDeepButtons(count) {
+      quickEl.innerHTML = "";
+      const n = Math.min(count, 5);
+      for (let i = 1; i <= n; i++) {
+        const b = document.createElement("button");
+        b.textContent = `📖 深入看第 ${i} 則`;
+        b.dataset.msg = `深入了解第 ${i} 則`;
+        quickEl.appendChild(b);
+      }
+    }
+
     async function send(text) {
       text = (text || "").trim();
       if (!text) return;
@@ -340,6 +351,9 @@
         const data = await res.json();
         removeTyping();
         addMessage(data.reply || "（沒有回覆）", "bot");
+        if (data.type === "news" && data.count > 0) {
+          showDeepButtons(data.count);
+        }
       } catch (err) {
         removeTyping();
         addMessage("連線失敗，請確認 Flask 伺服器有正常啟動。", "bot");
