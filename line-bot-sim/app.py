@@ -357,8 +357,11 @@ def chat():
 
 
 # ===== LINE Messaging API Webhook =====
-@app.route("/callback", methods=["POST"])
+@app.route("/callback", methods=["GET", "POST"])
 def callback():
+    if request.method == "GET":
+        return "✅ LINE Webhook 伺服器運作正常！此網址為 LINE 官方通訊專用，請直接在手機 LINE App 中傳送訊息測試喔！", 200
+
     signature = request.headers.get("X-Line-Signature", "")
     body = request.get_data(as_text=True)
 
