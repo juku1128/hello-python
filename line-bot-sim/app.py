@@ -1,9 +1,15 @@
 import re
+import time
 from datetime import datetime
 import requests
 import feedparser
 from urllib.parse import quote
 from flask import Flask, render_template, request, jsonify
+
+try:
+    from ddgs import DDGS
+except ImportError:
+    from duckduckgo_search import DDGS
 
 app = Flask(__name__)
 
@@ -18,7 +24,8 @@ NEWS_FEEDS = {
     "default": "https://news.google.com/rss?hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
 }
 
-NEWS_KEYWORDS = ["新聞", "時事", "頭條", "快訊", "消息", "最新消息", "搜尋", "查詢", "news"]
+NEWS_TRIGGER_KEYWORDS = ["新聞", "時事", "頭條", "快訊", "消息", "news"]
+WEB_SEARCH_KEYWORDS = ["搜尋", "查詢", "找一下", "查", "找"]
 
 TOPIC_KEYWORDS = {
     "tech": ["科技", "3c", "ai", "人工智慧", "電腦", "手機", "tech"],
@@ -58,7 +65,11 @@ def ollama_generate(prompt, system=None):
 
 
 def is_news_query(text):
-    return any(kw in text.lower() for kw in NEWS_KEYWORDS)
+    return any(kw in text.lower() for kw in NEWS_TRIGGER_KEYWORDS)
+
+
+def is_web_search_query(text):
+    return any(kw in text.lower() for kw in WEB_SEARCH_KEYWORDS)
 
 
 def pick_feed(text):
@@ -93,6 +104,22 @@ def parse_deep_query(text):
     return None
 
 
+WEB_QUERY_STOPWORDS = [
+    "我想知道", "我想看", "幫我查", "幫我找", "幫我", "幫忙",
+    "搜尋一下", "查一下", "找一下", "搜尋", "查詢", "查", "找",
+    "一下", "請", "的", "嗎", "呢", "啊", "喔",
+]
+
+
+def extract_web_query(text):
+    cleaned = text
+    for word in sorted(WEB_QUERY_STOPWORDS, key=len, reverse=True):
+        cleaned = re.sub(re.escape(word), " ", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"[^\w\u4e00-\u9fff]+", " ", cleaned)
+    tokens = [t for t in cleaned.split() if t]
+    return " ".join(tokens).strip()
+
+
 def strip_html(text):
     return re.sub(r"<[^>]+>", "", text or "").strip()
 
@@ -119,6 +146,26 @@ def fetch_news_by_keyword(keyword, limit=5):
     url = NEWS_SEARCH_URL.format(encoded_keyword=quote(keyword))
     feed = feedparser.parse(url)
     return parse_entries(feed, limit)
+
+
+def web_search(query, max_results=5, retries=3):
+    for attempt in range(retries):
+        try:
+            results = []
+            with DDGS() as ddgs:
+                for r in ddgs.text(query, region="tw-tzh", max_results=max_results):
+                    results.append({
+                        "title": (r.get("title") or "").strip(),
+                        "body": (r.get("body") or "").strip(),
+                        "href": (r.get("href") or "").strip(),
+                    })
+            results = [r for r in results if r["title"] or r["body"]]
+            if results:
+                return results
+        except Exception:
+            pass
+        time.sleep(1)
+    return []
 
 
 def summarize_news(items, keyword=None):
@@ -182,6 +229,33 @@ def deep_analyze(item, index):
     )
     reply = ollama_generate(prompt, system)
     return f"📖 第 {index} 則深度分析\n\n{reply}"
+
+
+def summarize_web(query, results):
+    if not results:
+        return f"抱歉，我在全網搜尋「{query}」時找不到相關資料，換個關鍵字試試看？"
+
+    lines = []
+    for i, r in enumerate(results, 1):
+        lines.append(f"{i}. 標題：{r['title']}\n   摘要：{r['body']}\n   網址：{r['href']}")
+    web_text = "\n".join(lines)
+
+    system = (
+        "你是「新聞小助手」，一個客觀、中立的資訊檢索小助手。"
+        "請一律使用繁體中文，只根據使用者提供的網頁資料作答，"
+        "絕對不要憑空捏造或加入資料以外的內容，格式清楚、條列分明。"
+    )
+    prompt = (
+        f"使用者想查詢：「{query}」\n\n"
+        f"以下是我在全網搜尋到的網頁資料：\n\n{web_text}\n\n"
+        "請扮演客觀的資訊檢索小助手，用繁體中文條列出查詢對象的重點資訊。"
+        "請先用一句話做總結，接著用 3~6 個重點條列說明。"
+        "只根據上述資料回答，若資料不足請誠實說明，不要臆測。"
+        "重點說明完即可，不需要自行列出網址或來源清單。"
+    )
+    reply = ollama_generate(prompt, system)
+    sources = "\n".join(f"{i}. {r['title']}\n   {r['href']}" for i, r in enumerate(results, 1))
+    return f"{reply}\n\n【參考網頁來源】\n{sources}"
 
 
 def chat_reply(user_text):
@@ -252,6 +326,22 @@ def chat():
                 "type": "news",
                 "topic": topic,
                 "count": len(items),
+            })
+
+        if is_web_search_query(message):
+            query = extract_web_query(message)
+            if not query:
+                return jsonify({
+                    "reply": "你想搜尋什麼呢？請提供更明確的關鍵字，我再幫你查查看～",
+                    "type": "chat",
+                })
+            results = web_search(query, max_results=5)
+            reply = summarize_web(query, results)
+            return jsonify({
+                "reply": reply,
+                "type": "web",
+                "query": query,
+                "count": len(results),
             })
 
         reply = chat_reply(message)
