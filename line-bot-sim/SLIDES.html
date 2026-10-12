@@ -5,14 +5,14 @@
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
 </head>
 <body class="bg-transparent text-[var(--foreground)] antialiased p-2 select-none">
-  <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-5 shadow-lg max-w-xl mx-auto flex flex-col justify-between" style="min-height: 480px;">
+  <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-4 sm:p-5 shadow-lg max-w-xl mx-auto flex flex-col justify-between" style="min-height: 500px;">
     
     <!-- 頂部資訊與進度條 -->
     <div class="border-b border-[var(--border)] pb-2.5">
       <div class="flex items-center justify-between text-xs text-[var(--muted-foreground)] mb-1">
         <span class="font-medium flex items-center gap-1.5">
           <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          LINE Bot × 本地開源 AI 新聞系統 · 成果報告
+          LINE Bot × 本地開源 AI 新聞系統 · 視覺化成果報告
         </span>
         <span id="slideCounter" class="font-mono bg-[var(--secondary)] text-[var(--secondary-foreground)] px-2 py-0.5 rounded-full font-semibold">1 / 10</span>
       </div>
@@ -49,7 +49,7 @@
           <div class="space-y-2.5 text-xs">
             <div class="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 leading-relaxed">
               <span class="font-bold text-emerald-600 dark:text-emerald-400">🎯 專案核心題目：</span><br>
-              結合 <strong>Antigravity 全域引導</strong>、<strong>OpenCode 結對工程</strong> 與 <strong>Ollama 本地開源模型</strong> 的 RAG 即時新聞系統。
+              結合 <strong>Antigravity 全域領航</strong>、<strong>OpenCode 結對工程</strong> 與 <strong>Ollama 本地開源大模型</strong> 的 RAG 即時新聞系統。
             </div>
             <div class="grid grid-cols-2 gap-2">
               <div class="p-2 rounded-lg bg-[var(--secondary)] border border-[var(--border)]">
@@ -110,64 +110,166 @@
         `
       },
       {
-        tag: "03 · 系統架構",
-        badge: "運作架構",
-        title: "系統整體運作架構圖（Runtime Architecture）",
-        body: `
-          <div class="space-y-2 text-xs">
-            <div class="p-2.5 rounded-xl bg-[var(--secondary)] border border-[var(--border)] font-mono text-[11px] leading-relaxed space-y-1">
-              <div class="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-bold">
-                <span>📱 前端介面</span> ➔ 擬真 LINE 網頁 (HTML/CSS/JS)
-              </div>
-              <div class="pl-4 text-[var(--muted-foreground)]">使用者輸入：「幫我查台積電新聞」 (POST /api/chat)</div>
-              <div class="flex items-center gap-1.5 text-blue-500 font-bold">
-                <span>⚙️ 後端中樞</span> ➔ Python Flask 伺服器 (app.py)
-              </div>
-              <div class="pl-4 text-[var(--muted-foreground)]">1. 停用詞過濾 ➔ 萃取關鍵字【台積電】<br>2. 記錄至記憶體 (LAST_NEWS_ITEMS)</div>
-              <div class="flex items-center gap-1.5 text-amber-500 font-bold">
-                <span>🌐 即時資訊層</span> ➔ Google News RSS 搜尋引擎
-              </div>
-              <div class="pl-4 text-[var(--muted-foreground)]">抓取最新 5 則標題與詳細內容</div>
-              <div class="flex items-center gap-1.5 text-purple-500 font-bold">
-                <span>🧠 本地 AI 大腦</span> ➔ Ollama (qwen2.5:3b)
-              </div>
-              <div class="pl-4 text-[var(--muted-foreground)]">閱讀新聞 ➔ 繁中條列摘要 ➔ 彈出 LINE 綠色氣泡！</div>
-            </div>
-          </div>
-        `
-      },
-      {
-        tag: "04 · 開發協同",
+        tag: "03 · 視覺架構圖 1",
         badge: "人機協作",
-        title: "三方協同架構圖：我如何與 AI 一起工作？",
+        title: "【開發架構圖】雙 Agent 人機協同閉環",
         body: `
           <div class="space-y-2 text-xs">
-            <p class="text-[var(--muted-foreground)]">本專案實踐了業界最先進的<strong>「雙 Agent 協同開發（Dual-Agent）」</strong>模式：</p>
-            <div class="grid grid-cols-3 gap-1.5 text-[11px]">
-              <div class="p-2 rounded-xl bg-[var(--secondary)] border border-[var(--border)] text-center">
-                <div class="text-lg mb-0.5">🧑‍💼</div>
-                <div class="font-bold text-amber-500">我（產品經理）</div>
-                <div class="text-[var(--muted-foreground)] mt-1">負責提需求、驗收功能、做出關鍵決策</div>
+            <div class="p-2.5 rounded-xl bg-[var(--secondary)] border border-[var(--border)] space-y-2">
+              <!-- 第一層：使用者決策 -->
+              <div class="flex items-center justify-between p-2 rounded-lg bg-amber-500/10 border border-amber-500/30">
+                <div class="flex items-center gap-2">
+                  <span class="text-base">🧑‍💼</span>
+                  <div>
+                    <span class="font-bold text-amber-500">我（產品經理 / 需求決策者）</span>
+                    <div class="text-[10px] text-[var(--muted-foreground)]">提出功能需求 · 驗收成果 · 主導專案方向</div>
+                  </div>
+                </div>
+                <span class="text-[10px] bg-amber-500 text-white px-1.5 py-0.5 rounded font-mono">Input</span>
               </div>
-              <div class="p-2 rounded-xl bg-[var(--secondary)] border border-[var(--border)] text-center">
-                <div class="text-lg mb-0.5">🚀</div>
-                <div class="font-bold text-blue-500">Antigravity</div>
-                <div class="text-[var(--muted-foreground)] mt-1">架構規劃師、Prompt 導演、底層除錯、Git 存檔</div>
+
+              <!-- 雙向引導箭頭 -->
+              <div class="flex justify-around text-center text-[10px] text-[var(--muted-foreground)]">
+                <div>↓ ① 提出白話需求</div>
+                <div>↑ ② 回饋優化 Prompt</div>
               </div>
-              <div class="p-2 rounded-xl bg-[var(--secondary)] border border-[var(--border)] text-center">
-                <div class="text-lg mb-0.5">⚡</div>
-                <div class="font-bold text-emerald-500">OpenCode</div>
-                <div class="text-[var(--muted-foreground)] mt-1">終端機 AI 工程師，負責實際寫出代碼並測試</div>
+
+              <!-- 第二層：雙 Agent 協作樞紐 -->
+              <div class="grid grid-cols-2 gap-2">
+                <div class="p-2 rounded-lg bg-blue-500/10 border border-blue-500/30">
+                  <div class="flex items-center gap-1.5 font-bold text-blue-500 mb-0.5">
+                    <span>🚀</span> Antigravity
+                  </div>
+                  <div class="text-[10px] text-[var(--muted-foreground)] space-y-0.5">
+                    <div>• 架構規劃 & Prompt 導演</div>
+                    <div>• 底層 Port 403 衝突破案</div>
+                    <div>• 自動化 Git / GitHub 存檔</div>
+                  </div>
+                </div>
+                <div class="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/30">
+                  <div class="flex items-center gap-1.5 font-bold text-emerald-600 dark:text-emerald-400 mb-0.5">
+                    <span>⚡</span> OpenCode
+                  </div>
+                  <div class="text-[10px] text-[var(--muted-foreground)] space-y-0.5">
+                    <div>• 終端機自主工程師</div>
+                    <div>• 生成與重構 Python 代碼</div>
+                    <div>• 實測驗證應用可行性</div>
+                  </div>
+                </div>
               </div>
-            </div>
-            <div class="p-2 rounded-lg bg-blue-500/10 border border-blue-500/20 text-[var(--foreground)] text-[11px]">
-              ✨ <strong>協作閉環：</strong>我提出想法 ➔ Antigravity 梳理技術劇本 ➔ 我在 OpenCode 執行產出 ➔ Antigravity 背景把關與 Git 推送。
+
+              <!-- 第三層：成果產出 -->
+              <div class="p-1.5 rounded-lg bg-[var(--card)] border border-[var(--border)] text-center text-[10px] text-[var(--muted-foreground)] flex items-center justify-between">
+                <span>📁 產出專案：app.py / index.html</span>
+                <span>➔</span>
+                <span class="text-emerald-500 font-bold">📦 自動同步至 GitHub 倉庫</span>
+              </div>
             </div>
           </div>
         `
       },
       {
-        tag: "05 · 角色剖析",
+        tag: "04 · 視覺架構圖 2",
+        badge: "RAG 檢索",
+        title: "【資料檢索架構圖】即時新聞 RAG 檢索流",
+        body: `
+          <div class="space-y-2 text-xs">
+            <div class="p-2.5 rounded-xl bg-[var(--secondary)] border border-[var(--border)] space-y-2">
+              
+              <!-- 步驟 1：自然語言輸入 -->
+              <div class="flex items-center gap-2 p-1.5 rounded-lg bg-[var(--card)] border border-[var(--border)]">
+                <span class="bg-emerald-500 text-white text-[10px] px-1.5 py-0.5 rounded font-mono">1</span>
+                <div>
+                  <span class="font-bold">使用者輸入：</span>
+                  <span class="text-emerald-600 dark:text-emerald-400 font-mono">「幫我查台積電最新新聞」</span>
+                </div>
+              </div>
+
+              <div class="text-center text-[10px] text-[var(--muted-foreground)]">↓ 發送 POST /api/chat 到後端</div>
+
+              <!-- 步驟 2：後端停用詞清洗 -->
+              <div class="p-2 rounded-lg bg-blue-500/10 border border-blue-500/30 space-y-1">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-blue-500">2. Flask 智慧清洗（extract_keyword）</span>
+                  <span class="text-[10px] text-blue-400">停用詞過濾</span>
+                </div>
+                <div class="text-[10px] text-[var(--muted-foreground)] font-mono">
+                  扣除「幫我查」、「最新」、「新聞」 ➔ 提煉核心詞：<span class="text-amber-500 font-bold">【台積電】</span>
+                </div>
+              </div>
+
+              <div class="text-center text-[10px] text-[var(--muted-foreground)]">↓ urllib.parse.quote 編碼請求</div>
+
+              <!-- 步驟 3：外部 RSS 檢索 -->
+              <div class="p-2 rounded-lg bg-amber-500/10 border border-amber-500/30 space-y-1">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-amber-500">3. Google News RSS 搜尋引擎</span>
+                  <span class="text-[10px] text-amber-400">毫秒級即時時事</span>
+                </div>
+                <div class="text-[10px] text-[var(--muted-foreground)]">
+                  抓取當前最新 5 則相關新聞（含標題、摘要、連結、發布時間）
+                </div>
+              </div>
+
+              <!-- 步驟 4：快取記憶 -->
+              <div class="p-1.5 rounded-lg bg-purple-500/10 border border-purple-500/30 text-[10px] flex items-center justify-between">
+                <span class="text-purple-400 font-bold">4. 記憶體快取：</span>
+                <span class="text-[var(--muted-foreground)]">寫入 LAST_NEWS_ITEMS 供後續深入剖析</span>
+              </div>
+
+            </div>
+          </div>
+        `
+      },
+      {
+        tag: "05 · 視覺架構圖 3",
+        badge: "多輪摘要",
+        title: "【查看摘要架構圖】本地推理與多輪下鑽",
+        body: `
+          <div class="space-y-2 text-xs">
+            <div class="p-2.5 rounded-xl bg-[var(--secondary)] border border-[var(--border)] space-y-2">
+
+              <!-- 階段 A：概覽條列 -->
+              <div class="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/30 space-y-1">
+                <div class="flex items-center justify-between font-bold text-emerald-600 dark:text-emerald-400">
+                  <span>階段 ① · 概覽摘要（Overview）</span>
+                  <span class="text-[10px] font-mono">5 則清單</span>
+                </div>
+                <div class="text-[10px] text-[var(--muted-foreground)]">
+                  新聞資料 + Prompt 注入本機 Ollama ➔ 產出親切條列式快報 ➔ 前端動態生成【📖 深入看第 1~5 則】按鈕
+                </div>
+              </div>
+
+              <!-- 多輪下鑽觸發 -->
+              <div class="flex items-center justify-center gap-2 text-[10px] text-purple-400 font-bold py-0.5">
+                <span>點擊【📖 深入看第 2 則】或輸入「2」</span>
+                <span>➔ 觸發多輪下鑽</span>
+              </div>
+
+              <!-- 階段 B：深度四大維度 -->
+              <div class="p-2 rounded-lg bg-purple-500/10 border border-purple-500/30 space-y-1.5">
+                <div class="flex items-center justify-between font-bold text-purple-400">
+                  <span>階段 ② · 深度剖析（Deep Drill-down）</span>
+                  <span class="text-[10px] font-mono">Ollama Qwen 2.5 (3B)</span>
+                </div>
+                <div class="grid grid-cols-2 gap-1 text-[10px]">
+                  <div class="p-1 rounded bg-[var(--card)] border border-[var(--border)]">📌【事件核心】</div>
+                  <div class="p-1 rounded bg-[var(--card)] border border-[var(--border)]">🔍【詳細背景經過】</div>
+                  <div class="p-1 rounded bg-[var(--card)] border border-[var(--border)]">💡【關鍵影響展望】</div>
+                  <div class="p-1 rounded bg-[var(--card)] border border-[var(--border)]">🔗【新聞來源連結】</div>
+                </div>
+              </div>
+
+              <div class="p-1.5 rounded-lg bg-[var(--card)] border border-[var(--border)] text-center text-[10px] text-[var(--muted-foreground)]">
+                💬 成果：LINE 聊天室彈出完整的專業深度分析氣泡！
+              </div>
+
+            </div>
+          </div>
+        `
+      },
+      {
+        tag: "06 · 角色剖析",
         badge: "協同亮點",
         title: "Antigravity 在本專案中發揮的 5 大關鍵協助",
         body: `
@@ -185,13 +287,13 @@
               <span class="font-bold text-rose-500">4. 系統級除錯（AirPlay 403 衝突）</span>：精準診斷出 macOS ControlCenter 佔用 Port 5000，秒換至 Port 5001 解除封鎖。
             </div>
             <div class="p-1.5 rounded-lg bg-[var(--secondary)] border border-[var(--border)]">
-              <span class="font-bold text-amber-500">5. 知識內化與可視化</span>：將所有底層邏輯轉化為架構圖、時序圖與互動簡報。
+              <span class="font-bold text-amber-500">5. 知識內化與視覺化</span>：將所有底層邏輯轉化為三大視覺架構圖與成果報告簡報。
             </div>
           </div>
         `
       },
       {
-        tag: "06 · 工具清單",
+        tag: "07 · 工具清單",
         badge: "技術清單",
         title: "使用到的程式工具、模型及其個別作用",
         body: `
@@ -220,50 +322,25 @@
         `
       },
       {
-        tag: "07 · 核心突破 1",
-        badge: "RAG 實踐",
-        title: "如何讓 AI 找到最新新聞？（RAG 原理解析）",
+        tag: "08 · 核心突破",
+        badge: "技術精華",
+        title: "RAG 檢索增強生成：為何能解決 AI 幻覺？",
         body: `
           <div class="space-y-2 text-xs leading-relaxed">
             <p class="text-[var(--muted-foreground)]">
-              <strong>問題癥結：</strong>大語言模型的知識只停留在訓練時間點，問它「今天的新聞」它會產生幻覺。
+              <strong>痛點：</strong>大語言模型的知識只停留在訓練時間點，問它「今天的新聞」它會產生幻覺或不知道。
             </p>
             <div class="p-2.5 rounded-xl bg-[var(--secondary)] border border-[var(--border)] space-y-1">
               <div class="font-bold text-emerald-600 dark:text-emerald-400">解法：檢索增強生成（RAG 架構）</div>
               <div class="text-[var(--muted-foreground)]">
-                1. <strong>自訂關鍵字提取</strong>：從句子中分離出核心詞（如「台積電」）。<br>
-                2. <strong>即時檢索</strong>：向 Google News RSS 取得即時新聞。<br>
-                3. <strong>上下文注入</strong>：把即時新聞內容以 Context 形式交給 Ollama 整理。
+                1. <strong>檢索（Retrieve）</strong>：自訂關鍵字向 Google News RSS 即時抓取新聞。<br>
+                2. <strong>增強（Augment）</strong>：把當前最新資訊塞入 Prompt 背景知識。<br>
+                3. <strong>生成（Generate）</strong>：交給本地 Qwen 2.5 進行精準摘要。
               </div>
             </div>
             <p class="text-[var(--muted-foreground)]">
               💡 <strong>成果：</strong>無需昂貴算力與重訓模型，就能讓本地 AI 擁有掌握當下新聞的能力！
             </p>
-          </div>
-        `
-      },
-      {
-        tag: "08 · 核心突破 2",
-        badge: "多輪對話",
-        title: "延伸功能：多輪深度摘要（Drill-down）",
-        body: `
-          <div class="space-y-2 text-xs leading-relaxed">
-            <p class="text-[var(--muted-foreground)]">
-              不僅只有單純列出新聞，更實作了<strong>有狀態（Stateful）的多輪互動</strong>：
-            </p>
-            <div class="grid grid-cols-2 gap-2">
-              <div class="p-2 rounded-lg bg-[var(--secondary)] border border-[var(--border)]">
-                <div class="font-bold text-blue-500">第 1 輪：新聞標題概覽</div>
-                <div class="text-[var(--muted-foreground)]">回傳 5 則最新時事重點，前端自動動態生成【📖 深入看第 1~5 則】快捷按鈕。</div>
-              </div>
-              <div class="p-2 rounded-lg bg-[var(--secondary)] border border-[var(--border)]">
-                <div class="font-bold text-purple-500">第 2 輪：深度 4 大面向報告</div>
-                <div class="text-[var(--muted-foreground)]">點擊按鈕或輸入「2」，後端鎖定該則新聞，產出深度剖析：</div>
-              </div>
-            </div>
-            <div class="p-2 rounded-lg bg-purple-500/10 border border-purple-500/20 text-[11px] text-[var(--foreground)]">
-              📌 事件核心 ｜ 🔍 詳細背景與經過 ｜ 💡 關鍵影響與展望 ｜ 🔗 新聞來源連結
-            </div>
           </div>
         `
       },
