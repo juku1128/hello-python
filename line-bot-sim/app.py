@@ -4,14 +4,32 @@ from datetime import datetime
 import requests
 import feedparser
 from urllib.parse import quote
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, abort
 
 try:
     from ddgs import DDGS
 except ImportError:
     from duckduckgo_search import DDGS
 
+from linebot.v3 import WebhookHandler
+from linebot.v3.exceptions import InvalidSignatureError
+from linebot.v3.messaging import (
+    Configuration,
+    ApiClient,
+    MessagingApi,
+    ReplyMessageRequest,
+    TextMessage,
+)
+from linebot.v3.webhooks import MessageEvent, TextMessageContent
+
 app = Flask(__name__)
+
+# LINE Messaging API Credentials
+LINE_CHANNEL_SECRET = "bf7d81774ae8d0a79712a688cbf21406"
+LINE_CHANNEL_ACCESS_TOKEN = "gWA0ijQgnWGgFbVCBBSc5h2ZFai8wbqqZ/EhS8AFP4uV0y2WC9tDFOeJjlB26BrVm/Gb/mHNrKeZeGzH4Gh/ELpkBNqaSnhLFaLhfnLWr5eWvrAF8e6s6sGxNvkcMkK0K8NlqOI/R0VDz92mqRQ05QdB04t89/1O/w1cDnyilFU="
+
+line_configuration = Configuration(access_token=LINE_CHANNEL_ACCESS_TOKEN)
+line_handler = WebhookHandler(LINE_CHANNEL_SECRET)
 
 OLLAMA_URL = "http://localhost:11434/api/generate"
 OLLAMA_MODEL = "qwen2.5:3b"
@@ -275,78 +293,60 @@ def index():
     return render_template("index.html")
 
 
+def process_user_message(message):
+    global LAST_NEWS_ITEMS
+    message = (message or "").strip()
+    if not message:
+        return "你好像沒有輸入內容喔～再說一次好嗎？", "chat", {}
+
+    deep_index = parse_deep_query(message)
+    if deep_index is not None:
+        if not LAST_NEWS_ITEMS:
+            return "請先查詢新聞主題，再選擇想深入了解的編號喔！", "chat", {}
+        if deep_index < 1 or deep_index > len(LAST_NEWS_ITEMS):
+            return f"我這邊只有 {len(LAST_NEWS_ITEMS)} 則新聞喔，請輸入 1~{len(LAST_NEWS_ITEMS)} 之間的編號～", "chat", {}
+        item = LAST_NEWS_ITEMS[deep_index - 1]
+        reply = deep_analyze(item, deep_index)
+        return reply, "deep", {"index": deep_index}
+
+    if is_news_query(message):
+        keyword = extract_keyword(message)
+        if keyword:
+            items = fetch_news_by_keyword(keyword, limit=5)
+            reply = summarize_news(items, keyword=keyword)
+            if items:
+                LAST_NEWS_ITEMS = items
+            return reply, "news", {"keyword": keyword, "count": len(items)}
+
+        topic = pick_feed(message)
+        items = fetch_news(topic, limit=5)
+        reply = summarize_news(items)
+        if items:
+            LAST_NEWS_ITEMS = items
+        return reply, "news", {"topic": topic, "count": len(items)}
+
+    if is_web_search_query(message):
+        query = extract_web_query(message)
+        if not query:
+            return "你想搜尋什麼呢？請提供更明確的關鍵字，我再幫你查查看～", "chat", {}
+        results = web_search(query, max_results=5)
+        reply = summarize_web(query, results)
+        return reply, "web", {"query": query, "count": len(results)}
+
+    reply = chat_reply(message)
+    return reply, "chat", {}
+
+
 @app.route("/api/chat", methods=["POST"])
 def chat():
-    global LAST_NEWS_ITEMS
-
     data = request.get_json(silent=True) or {}
     message = (data.get("message") or "").strip()
 
-    if not message:
-        return jsonify({"reply": "你好像沒有輸入內容喔～再說一次好嗎？", "type": "chat"})
-
     try:
-        deep_index = parse_deep_query(message)
-        if deep_index is not None:
-            if not LAST_NEWS_ITEMS:
-                return jsonify({
-                    "reply": "請先查詢新聞主題，再選擇想深入了解的編號喔！",
-                    "type": "chat",
-                })
-            if deep_index < 1 or deep_index > len(LAST_NEWS_ITEMS):
-                return jsonify({
-                    "reply": f"我這邊只有 {len(LAST_NEWS_ITEMS)} 則新聞喔，請輸入 1~{len(LAST_NEWS_ITEMS)} 之間的編號～",
-                    "type": "chat",
-                })
-            item = LAST_NEWS_ITEMS[deep_index - 1]
-            reply = deep_analyze(item, deep_index)
-            return jsonify({"reply": reply, "type": "deep", "index": deep_index})
-
-        if is_news_query(message):
-            keyword = extract_keyword(message)
-            if keyword:
-                items = fetch_news_by_keyword(keyword, limit=5)
-                reply = summarize_news(items, keyword=keyword)
-                if items:
-                    LAST_NEWS_ITEMS = items
-                return jsonify({
-                    "reply": reply,
-                    "type": "news",
-                    "keyword": keyword,
-                    "count": len(items),
-                })
-
-            topic = pick_feed(message)
-            items = fetch_news(topic, limit=5)
-            reply = summarize_news(items)
-            if items:
-                LAST_NEWS_ITEMS = items
-            return jsonify({
-                "reply": reply,
-                "type": "news",
-                "topic": topic,
-                "count": len(items),
-            })
-
-        if is_web_search_query(message):
-            query = extract_web_query(message)
-            if not query:
-                return jsonify({
-                    "reply": "你想搜尋什麼呢？請提供更明確的關鍵字，我再幫你查查看～",
-                    "type": "chat",
-                })
-            results = web_search(query, max_results=5)
-            reply = summarize_web(query, results)
-            return jsonify({
-                "reply": reply,
-                "type": "web",
-                "query": query,
-                "count": len(results),
-            })
-
-        reply = chat_reply(message)
-        return jsonify({"reply": reply, "type": "chat"})
-
+        reply, msg_type, extra = process_user_message(message)
+        payload = {"reply": reply, "type": msg_type}
+        payload.update(extra)
+        return jsonify(payload)
     except requests.exceptions.ConnectionError:
         return jsonify({
             "reply": "我連不上本機的 Ollama 服務 😢\n請確認有執行 `ollama serve`，並且已下載 `qwen2.5:3b` 模型。",
@@ -354,6 +354,40 @@ def chat():
         })
     except Exception as exc:
         return jsonify({"reply": f"哎呀，我這邊出了點狀況：{exc}", "type": "error"})
+
+
+# ===== LINE Messaging API Webhook =====
+@app.route("/callback", methods=["POST"])
+def callback():
+    signature = request.headers.get("X-Line-Signature", "")
+    body = request.get_data(as_text=True)
+
+    try:
+        line_handler.handle(body, signature)
+    except InvalidSignatureError:
+        abort(400)
+
+    return "OK"
+
+
+@line_handler.add(MessageEvent, message=TextMessageContent)
+def handle_line_message(event):
+    user_text = event.message.text
+    try:
+        reply_text, _, _ = process_user_message(user_text)
+    except requests.exceptions.ConnectionError:
+        reply_text = "抱歉，我連不上本機的 Ollama 服務 😢 請確認本機有開啟 Ollama。"
+    except Exception as exc:
+        reply_text = f"抱歉，處理您的訊息時發生狀況：{exc}"
+
+    with ApiClient(line_configuration) as api_client:
+        line_bot_api = MessagingApi(api_client)
+        line_bot_api.reply_message(
+            ReplyMessageRequest(
+                reply_token=event.reply_token,
+                messages=[TextMessage(text=reply_text[:5000])],
+            )
+        )
 
 
 if __name__ == "__main__":
