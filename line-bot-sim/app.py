@@ -1,4 +1,5 @@
 import re
+from datetime import datetime
 import requests
 import feedparser
 from urllib.parse import quote
@@ -184,9 +185,12 @@ def deep_analyze(item, index):
 
 
 def chat_reply(user_text):
+    now_str = datetime.now().strftime("%Y年%m月%d日")
     system = (
         "你是「新聞小助手」，一個親切的 LINE 聊天機器人。"
+        f"今天是西元 {now_str}。"
         "請一律使用繁體中文回覆，語氣自然、有禮貌、帶點溫度，"
+        "若使用者問起現在的年份、日期、時間或今天幾號，請根據上述今天的真實日期準確回答。"
         "回覆請盡量簡短（一兩句話為主），可以適度使用表情符號。"
     )
     return ollama_generate(user_text, system)
