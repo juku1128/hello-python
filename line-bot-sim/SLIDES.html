@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+</head>
+<body class="bg-transparent text-[var(--foreground)] antialiased p-2 select-none">
+  <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-5 shadow-lg max-w-xl mx-auto flex flex-col justify-between" style="min-height: 450px;">
+    
+    <!-- Header: 簡報標題與進度條 -->
+    <div class="border-b border-[var(--border)] pb-3">
+      <div class="flex items-center justify-between text-xs text-[var(--muted-foreground)] mb-1.5">
+        <span class="font-medium flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          LINE Bot × 本地 AI 新聞系統 · 新手入門指南
+        </span>
+        <span id="slideCounter" class="font-mono bg-[var(--secondary)] text-[var(--secondary-foreground)] px-2 py-0.5 rounded-full font-semibold">1 / 8</span>
+      </div>
+      <!-- 進度條 -->
+      <div class="w-full bg-[var(--secondary)] h-1.5 rounded-full overflow-hidden">
+        <div id="progressBar" class="bg-emerald-500 h-full transition-all duration-300 ease-out" style="width: 12.5%;"></div>
+      </div>
+    </div>
+
+    <!-- Slide Content Area -->
+    <div id="slideContent" class="py-4 flex-1 flex flex-col justify-center">
+      <!-- 內容會透過 JavaScript 動態渲染 -->
+    </div>
+
+    <!-- Footer: 控制按鈕 -->
+    <div class="border-t border-[var(--border)] pt-3 flex items-center justify-between">
+      <button id="prevBtn" class="px-3.5 py-1.5 text-xs font-medium rounded-lg border border-[var(--border)] bg-[var(--secondary)] text-[var(--secondary-foreground)] hover:opacity-80 transition disabled:opacity-30 disabled:cursor-not-allowed">
+        ← 上一頁
+      </button>
+
+      <!-- 快速指示點點 -->
+      <div id="dotContainer" class="flex gap-1.5"></div>
+
+      <button id="nextBtn" class="px-4 py-1.5 text-xs font-semibold rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition flex items-center gap-1">
+        <span>下一頁</span> →
+      </button>
+    </div>
+
+  </div>
+
+  <script>
+    const slides = [
+      {
+        tag: "01 · 專案起點",
+        title: "什麼是「本地 AI 新聞 LINE Bot」？",
+        badge: "核心目標",
+        body: `
+          <div class="space-y-3">
+            <p class="text-sm text-[var(--muted-foreground)] leading-relaxed">
+              這是一個在你的電腦<strong>完全免費、保護隱私</strong>運行的智慧新聞助理。它解決了兩大難題：
+            </p>
+            <div class="grid grid-cols-2 gap-2.5">
+              <div class="p-3 rounded-xl bg-[var(--secondary)] border border-[var(--border)]">
+                <div class="text-lg mb-1">🦙 本地運算</div>
+                <div class="text-xs text-[var(--muted-foreground)]">不用付費買 OpenAI API，用本機 Ollama 跑 Qwen 2.5 開源模型。</div>
+              </div>
+              <div class="grid p-3 rounded-xl bg-[var(--secondary)] border border-[var(--border)]">
+                <div class="text-lg mb-1">📰 即時聯網</div>
+                <div class="text-xs text-[var(--muted-foreground)]">外掛 Google News 即時搜尋，讓 AI 永遠知道今天剛剛發生的新聞！</div>
+              </div>
+            </div>
+            <div class="text-xs text-emerald-600 dark:text-emerald-400 font-medium bg-emerald-500/10 p-2 rounded-lg">
+              ✨ 最棒的是：你不需要硬背代碼，而是透過 AI 指揮官的模式完成它！
+            </div>
+          </div>
+        `
+      },
+      {
+        tag: "02 · 觀念顛覆",
+        title: "AI 時代的新角色：你就是「產品經理」",
+        badge: "開發模式",
+        body: `
+          <div class="space-y-3 text-xs leading-relaxed">
+            <div class="p-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-[var(--foreground)]">
+              <span class="font-bold text-red-500">❌ 傳統舊思維：</span>
+              從頭手打 Python 語法、配置環境、背套件名稱，遇到 Bug 抓破頭皮。
+            </div>
+            <div class="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-[var(--foreground)]">
+              <span class="font-bold text-emerald-600 dark:text-emerald-400">✅ 現代新範式（AI 原生開發）：</span>
+              你當<strong>指揮官（發想功能）</strong>，讓 <strong>OpenCode（資深工程師）</strong> 動手寫代碼，你專注於需求檢驗！
+            </div>
+            <div class="p-2.5 rounded-xl bg-[var(--secondary)] text-[var(--muted-foreground)]">
+              💡 <strong>實證：</strong>今天所有的後端邏輯與網頁代碼，都是你用幾句繁體中文指示就自動產生的！
+            </div>
+          </div>
+        `
+      },
+      {
+        tag: "03 · 四大角色",
+        title: "系統的「眼、腦、口、手」分工",
+        badge: "系統分工",
+        body: `
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <div class="p-2.5 rounded-xl border border-[var(--border)] bg-[var(--secondary)]">
+              <div class="font-bold text-blue-500 mb-1">👀 眼睛 · Google News</div>
+              <div class="text-[var(--muted-foreground)]">負責上網抓即時新聞資料（因為本地大模型平常不上網，需要它給資料）。</div>
+            </div>
+            <div class="p-2.5 rounded-xl border border-[var(--border)] bg-[var(--secondary)]">
+              <div class="font-bold text-purple-500 mb-1">🧠 大腦 · Ollama (Qwen)</div>
+              <div class="text-[var(--muted-foreground)]">負責閱讀抓回來的新聞，濃縮消化成易讀的繁體中文條列重點。</div>
+            </div>
+            <div class="p-2.5 rounded-xl border border-[var(--border)] bg-[var(--secondary)]">
+              <div class="font-bold text-emerald-500 mb-1">💬 嘴巴 · 擬真 LINE 網頁</div>
+              <div class="text-[var(--muted-foreground)]">擬真的手機對話視窗，彈出熟悉的綠色氣泡，與使用者互動。</div>
+            </div>
+            <div class="p-2.5 rounded-xl border border-[var(--border)] bg-[var(--secondary)]">
+              <div class="font-bold text-amber-500 mb-1">⚙️ 神經中樞 · Flask 後端</div>
+              <div class="text-[var(--muted-foreground)]">串起一切的大總管（Python），接收訊息、查新聞、送 AI、回傳結果。</div>
+            </div>
+          </div>
+        `
+      },
+      {
+        tag: "04 · 關鍵黑科技",
+        title: "為什麼 AI 能知道「今天」的新聞？",
+        badge: "RAG 概念",
+        body: `
+          <div class="space-y-2 text-xs leading-relaxed">
+            <p class="text-[var(--muted-foreground)]">
+              很多人誤以為 AI 無所不知，但所有大模型的知識都停留在訓練那一刻。
+            </p>
+            <div class="p-3 rounded-xl bg-[var(--secondary)] border border-[var(--border)] space-y-2">
+              <div class="font-semibold text-emerald-600 dark:text-emerald-400">這就是業界最熱門的「RAG（檢索增強生成）」！</div>
+              <div class="flex items-center gap-1.5 text-[var(--muted-foreground)]">
+                <span>① 先向外部資料庫抓取最新資料</span>
+                <span>➔</span>
+                <span>② 把資料塞進 Prompt 背景</span>
+                <span>➔</span>
+                <span>③ 請 AI 根據這份資料做摘要</span>
+              </div>
+            </div>
+            <p class="text-[var(--muted-foreground)]">
+              🎯 <strong>結論：</strong>本地模型不需要龐大連網算力，只要有「外掛搜尋眼睛」，就能產出準確的即時新聞！
+            </p>
+          </div>
+        `
+      },
+      {
+        tag: "05 · 進階亮點",
+        title: "自訂關鍵字搜尋：它是怎麼實現的？",
+        badge: "動態搜尋",
+        body: `
+          <div class="space-y-2 text-xs leading-relaxed">
+            <p class="text-[var(--muted-foreground)]">
+              使用者說：「幫我查<span class="text-amber-500 font-bold">台積電</span>最新新聞」
+            </p>
+            <div class="p-2.5 rounded-xl bg-[var(--secondary)] border border-[var(--border)] font-mono text-[11px] text-[var(--muted-foreground)] space-y-1">
+              <div>1. 過濾停用詞：扣除「幫我查」、「最新」、「新聞」</div>
+              <div class="text-emerald-600 dark:text-emerald-400 font-bold">2. 抓出純關鍵字：【台積電】</div>
+              <div>3. 拼成動態網址：https://news.google.com/rss/search?q=台積電</div>
+            </div>
+            <p class="text-[var(--muted-foreground)]">
+              無論使用者問<strong>黃仁勳、地震、大谷翔平、星宇航空</strong>，系統都能 100% 動態即時抓取！
+            </p>
+          </div>
+        `
+      },
+      {
+        tag: "06 · 殺手級功能",
+        title: "多輪對話：點「第 2 則」深入剖析",
+        badge: "上下文記憶",
+        body: `
+          <div class="space-y-2.5 text-xs leading-relaxed">
+            <div class="grid grid-cols-2 gap-2">
+              <div class="p-2.5 rounded-xl bg-[var(--secondary)] border border-[var(--border)]">
+                <span class="font-bold text-blue-500">第一階段 · 瀏覽概覽</span>
+                <p class="text-[var(--muted-foreground)] mt-1">條列 1~5 則新聞亮點，下方跳出【📖 深入看第 1~5 則】按鈕。</p>
+              </div>
+              <div class="p-2.5 rounded-xl bg-[var(--secondary)] border border-[var(--border)]">
+                <span class="font-bold text-purple-500">第二階段 · 深度剖析</span>
+                <p class="text-[var(--muted-foreground)] mt-1">後端記住剛才的清單，點擊「2」後讓 AI 生成 4 大面向深度報告！</p>
+              </div>
+            </div>
+            <div class="p-2 rounded-xl bg-purple-500/10 border border-purple-500/20 text-[var(--foreground)] text-[11px]">
+              📌 事件核心 ｜ 🔍 背景經過 ｜ 💡 關鍵影響 ｜ 🔗 新聞來源連結
+            </div>
+          </div>
+        `
+      },
+      {
+        tag: "07 · 工具對照",
+        title: "工具兵器譜總覽",
+        badge: "技能對照",
+        body: `
+          <div class="grid grid-cols-3 gap-1.5 text-[11px]">
+            <div class="p-2 rounded-lg bg-[var(--secondary)] border border-[var(--border)]">
+              <div class="font-bold text-amber-500">OpenCode</div>
+              <div class="text-[var(--muted-foreground)]">終端機 AI 結對工程師，負責自動寫程式碼。</div>
+            </div>
+            <div class="p-2 rounded-lg bg-[var(--secondary)] border border-[var(--border)]">
+              <div class="font-bold text-purple-500">Ollama</div>
+              <div class="text-[var(--muted-foreground)]">本地模型運行容器，離線提供強大推理。</div>
+            </div>
+            <div class="p-2 rounded-lg bg-[var(--secondary)] border border-[var(--border)]">
+              <div class="font-bold text-blue-500">Python Flask</div>
+              <div class="text-[var(--muted-foreground)]">後端伺服器，負責邏輯調度與記憶。</div>
+            </div>
+            <div class="p-2 rounded-lg bg-[var(--secondary)] border border-[var(--border)]">
+              <div class="font-bold text-emerald-500">Google RSS</div>
+              <div class="text-[var(--muted-foreground)]">免費、免金鑰的即時新聞資料庫。</div>
+            </div>
+            <div class="p-2 rounded-lg bg-[var(--secondary)] border border-[var(--border)]">
+              <div class="font-bold text-rose-500">LINE 擬真介面</div>
+              <div class="text-[var(--muted-foreground)]">免審核、免證件的展示門面。</div>
+            </div>
+            <div class="p-2 rounded-lg bg-[var(--secondary)] border border-[var(--border)]">
+              <div class="font-bold text-cyan-500">Git & GitHub</div>
+              <div class="text-[var(--muted-foreground)]">版本控制與雲端保險箱，紀錄每步成長。</div>
+            </div>
+          </div>
+        `
+      },
+      {
+        tag: "08 · 總結報告",
+        title: "向老師報告的加分金句指南",
+        badge: "總結答辯",
+        body: `
+          <div class="space-y-2 text-xs leading-relaxed">
+            <div class="p-2.5 rounded-xl bg-[var(--secondary)] border border-[var(--border)]">
+              <div class="font-bold text-emerald-600 dark:text-emerald-400">Q1. 為什麼能在本地掌握最新時事？</div>
+              <div class="text-[var(--muted-foreground)]">「我們採用 RAG 架構，以 Google News RSS 彌補模型沒有連網知識的限制，兼顧即時性與本機資料隱私。」</div>
+            </div>
+            <div class="p-2.5 rounded-xl bg-[var(--secondary)] border border-[var(--border)]">
+              <div class="font-bold text-emerald-600 dark:text-emerald-400">Q2. 這個系統如何避免單純死板的一問一答？</div>
+              <div class="text-[var(--muted-foreground)]">「我們設計了有狀態的 Session 記憶機制，支援多輪對話，能從巨觀新聞條列一鍵切入微觀深度剖析。」</div>
+            </div>
+          </div>
+        `
+      }
+    ];
+
+    let currentSlide = 0;
+
+    const slideContentEl = document.getElementById("slideContent");
+    const slideCounterEl = document.getElementById("slideCounter");
+    const progressBarEl = document.getElementById("progressBar");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const dotContainerEl = document.getElementById("dotContainer");
+
+    // 建立小圓點
+    slides.forEach((_, i) => {
+      const dot = document.createElement("button");
+      dot.className = "w-2 h-2 rounded-full transition-all " + (i === 0 ? "bg-emerald-500 w-4" : "bg-[var(--border)]");
+      dot.addEventListener("click", () => goToSlide(i));
+      dotContainerEl.appendChild(dot);
+    });
+
+    function updateDots() {
+      const dots = dotContainerEl.querySelectorAll("button");
+      dots.forEach((dot, i) => {
+        if (i === currentSlide) {
+          dot.className = "h-2 rounded-full transition-all bg-emerald-500 w-4";
+        } else {
+          dot.className = "w-2 h-2 rounded-full transition-all bg-[var(--border)] hover:bg-[var(--muted-foreground)]";
+        }
+      });
+    }
+
+    function renderSlide() {
+      const s = slides[currentSlide];
+      slideCounterEl.textContent = `${currentSlide + 1} / ${slides.length}`;
+      progressBarEl.style.width = `${((currentSlide + 1) / slides.length) * 100}%`;
+
+      slideContentEl.innerHTML = `
+        <div class="animate-fade-in flex flex-col justify-center">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-mono font-semibold tracking-wider text-emerald-600 dark:text-emerald-400 uppercase">${s.tag}</span>
+            <span class="text-[10px] font-semibold bg-[var(--secondary)] text-[var(--secondary-foreground)] px-2 py-0.5 rounded-md border border-[var(--border)]">${s.badge}</span>
+          </div>
+          <h3 class="text-base font-bold text-[var(--foreground)] mb-3 leading-snug">${s.title}</h3>
+          ${s.body}
+        </div>
+      `;
+
+      prevBtn.disabled = currentSlide === 0;
+      if (currentSlide === slides.length - 1) {
+        nextBtn.innerHTML = "<span>完成閱讀</span> ✓";
+        nextBtn.className = "px-4 py-1.5 text-xs font-semibold rounded-lg bg-emerald-700 text-white hover:bg-emerald-800 transition flex items-center gap-1";
+      } else {
+        nextBtn.innerHTML = "<span>下一頁</span> →";
+        nextBtn.className = "px-4 py-1.5 text-xs font-semibold rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition flex items-center gap-1";
+      }
+
+      updateDots();
+    }
+
+    function goToSlide(index) {
+      if (index >= 0 && index < slides.length) {
+        currentSlide = index;
+        renderSlide();
+      }
+    }
+
+    prevBtn.addEventListener("click", () => goToSlide(currentSlide - 1));
+    nextBtn.addEventListener("click", () => {
+      if (currentSlide < slides.length - 1) {
+        goToSlide(currentSlide + 1);
+      } else {
+        goToSlide(0); // 循環
+      }
+    });
+
+    // 鍵盤左右鍵切換
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft") goToSlide(currentSlide - 1);
+      if (e.key === "ArrowRight") goToSlide(currentSlide + 1);
+    });
+
+    renderSlide();
+  </script>
+</body>
+</html>
