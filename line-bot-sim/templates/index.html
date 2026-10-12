@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>新聞小助手 · LINE 模擬聊天室</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC",
+        "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+      background: #3a3f47;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px 0;
+    }
+
+    .phone {
+      width: 420px;
+      max-width: 96vw;
+      height: 780px;
+      max-height: 94vh;
+      background: #7b8b92;
+      border-radius: 24px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+      position: relative;
+    }
+
+    /* ===== 標題列 ===== */
+    .header {
+      background: #06c755;
+      color: #fff;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+      z-index: 2;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    }
+    .header .back {
+      font-size: 20px;
+      opacity: 0.9;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .header .avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .header .title { font-size: 16px; font-weight: 600; line-height: 1.25; }
+    .header .status { font-size: 11px; opacity: 0.85; }
+    .header .icons { margin-left: auto; display: flex; gap: 16px; font-size: 18px; opacity: 0.95; }
+
+    /* ===== 對話區 ===== */
+    .messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 12px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      background:
+        linear-gradient(rgba(148, 165, 170, 0.55), rgba(148, 165, 170, 0.55)),
+        #7b8b92;
+    }
+    .messages::-webkit-scrollbar { width: 6px; }
+    .messages::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.2); border-radius: 3px; }
+
+    .date-divider {
+      align-self: center;
+      background: rgba(0, 0, 0, 0.18);
+      color: #fff;
+      font-size: 11px;
+      padding: 3px 12px;
+      border-radius: 12px;
+      margin: 6px 0;
+    }
+
+    .row { display: flex; align-items: flex-end; gap: 8px; margin-bottom: 4px; }
+    .row.me { flex-direction: row-reverse; }
+
+    .row .avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+    }
+    .row.me .avatar { visibility: hidden; }
+
+    .bubble-wrap { display: flex; flex-direction: column; max-width: 74%; }
+    .row.me .bubble-wrap { align-items: flex-end; }
+
+    .name { font-size: 11px; color: #fff; margin: 0 0 3px 4px; opacity: 0.95; }
+
+    .bubble {
+      padding: 9px 13px;
+      border-radius: 16px;
+      font-size: 14px;
+      line-height: 1.55;
+      color: #333;
+      background: #fff;
+      white-space: pre-wrap;
+      word-break: break-word;
+      position: relative;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+      border-top-left-radius: 4px;
+    }
+    .row.me .bubble {
+      background: #86e07f;
+      border-top-left-radius: 16px;
+      border-top-right-radius: 4px;
+    }
+
+    .meta {
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.85);
+      margin-top: 3px;
+      padding: 0 4px;
+    }
+
+    /* 打字中動畫 */
+    .typing { display: flex; gap: 4px; padding: 12px 14px; }
+    .typing span {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: #b7b7b7; animation: blink 1.2s infinite both;
+    }
+    .typing span:nth-child(2) { animation-delay: 0.2s; }
+    .typing span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes blink {
+      0%, 80%, 100% { opacity: 0.3; transform: translateY(0); }
+      40% { opacity: 1; transform: translateY(-3px); }
+    }
+
+    /* ===== 底部輸入框 ===== */
+    .input-bar {
+      background: #f3f3f3;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+      border-top: 1px solid rgba(0, 0, 0, 0.06);
+    }
+    .input-bar .plus {
+      font-size: 22px; color: #888; cursor: pointer; line-height: 1;
+    }
+    .input-bar input {
+      flex: 1;
+      border: none;
+      border-radius: 20px;
+      padding: 11px 16px;
+      font-size: 14px;
+      outline: none;
+      background: #fff;
+      color: #333;
+      font-family: inherit;
+    }
+    .input-bar input::placeholder { color: #b0b0b0; }
+    .input-bar .send {
+      background: #06c755;
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      font-size: 18px;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: transform 0.12s, opacity 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .input-bar .send:active { transform: scale(0.92); }
+    .input-bar .send:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .quick {
+      display: flex; gap: 6px; flex-wrap: wrap;
+      padding: 0 12px 10px; background: #f3f3f3;
+    }
+    .quick button {
+      border: 1px solid #06c755;
+      background: #fff;
+      color: #06a94b;
+      border-radius: 14px;
+      font-size: 12px;
+      padding: 5px 11px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .quick button:active { background: #e8f9ee; }
+  </style>
+</head>
+<body>
+  <div class="phone">
+    <div class="header">
+      <div class="back">‹</div>
+      <div class="avatar">📰</div>
+      <div>
+        <div class="title">新聞小助手</div>
+        <div class="status">online · 隨時為你播報</div>
+      </div>
+      <div class="icons"><span>🔍</span><span>☰</span></div>
+    </div>
+
+    <div class="messages" id="messages">
+      <div class="date-divider" id="dateDivider"></div>
+    </div>
+
+    <div class="quick" id="quick">
+      <button data-msg="今天有什麼新聞？">今天有什麼新聞？</button>
+      <button data-msg="最新科技新聞">最新科技新聞</button>
+      <button data-msg="國際新聞">國際新聞</button>
+      <button data-msg="哈囉你好">哈囉你好</button>
+    </div>
+
+    <div class="input-bar">
+      <div class="plus">＋</div>
+      <input id="input" type="text" placeholder="輸入訊息…" autocomplete="off" />
+      <button class="send" id="send" aria-label="送出">➤</button>
+    </div>
+  </div>
+
+  <script>
+    const messagesEl = document.getElementById("messages");
+    const inputEl = document.getElementById("input");
+    const sendBtn = document.getElementById("send");
+    const quickEl = document.getElementById("quick");
+
+    const now = () => {
+      const d = new Date();
+      return d.toLocaleTimeString("zh-TW", { hour: "2-digit", minute: "2-digit", hour12: false });
+    };
+
+    document.getElementById("dateDivider").textContent =
+      new Date().toLocaleDateString("zh-TW", { year: "numeric", month: "long", day: "numeric", weekday: "long" });
+
+    function scrollBottom() {
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    function addMessage(text, who) {
+      const row = document.createElement("div");
+      row.className = "row " + (who === "me" ? "me" : "bot");
+
+      const avatar = document.createElement("div");
+      avatar.className = "avatar";
+      avatar.textContent = who === "me" ? "🙂" : "📰";
+
+      const wrap = document.createElement("div");
+      wrap.className = "bubble-wrap";
+
+      if (who !== "me") {
+        const name = document.createElement("div");
+        name.className = "name";
+        name.textContent = "新聞小助手";
+        wrap.appendChild(name);
+      }
+
+      const bubble = document.createElement("div");
+      bubble.className = "bubble";
+      bubble.textContent = text;
+
+      const meta = document.createElement("div");
+      meta.className = "meta";
+      meta.textContent = now();
+
+      wrap.appendChild(bubble);
+      wrap.appendChild(meta);
+      row.appendChild(avatar);
+      row.appendChild(wrap);
+      messagesEl.appendChild(row);
+      scrollBottom();
+    }
+
+    function addTyping() {
+      const row = document.createElement("div");
+      row.className = "row bot";
+      row.id = "typingRow";
+
+      const avatar = document.createElement("div");
+      avatar.className = "avatar";
+      avatar.textContent = "📰";
+
+      const wrap = document.createElement("div");
+      wrap.className = "bubble-wrap";
+      const bubble = document.createElement("div");
+      bubble.className = "bubble";
+      bubble.style.padding = "2px";
+      const typing = document.createElement("div");
+      typing.className = "typing";
+      typing.innerHTML = "<span></span><span></span><span></span>";
+      bubble.appendChild(typing);
+      wrap.appendChild(bubble);
+      row.appendChild(avatar);
+      row.appendChild(wrap);
+      messagesEl.appendChild(row);
+      scrollBottom();
+    }
+
+    function removeTyping() {
+      const t = document.getElementById("typingRow");
+      if (t) t.remove();
+    }
+
+    async function send(text) {
+      text = (text || "").trim();
+      if (!text) return;
+      addMessage(text, "me");
+      inputEl.value = "";
+      sendBtn.disabled = true;
+      addTyping();
+
+      try {
+        const res = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: text }),
+        });
+        const data = await res.json();
+        removeTyping();
+        addMessage(data.reply || "（沒有回覆）", "bot");
+      } catch (err) {
+        removeTyping();
+        addMessage("連線失敗，請確認 Flask 伺服器有正常啟動。", "bot");
+      } finally {
+        sendBtn.disabled = false;
+        inputEl.focus();
+      }
+    }
+
+    sendBtn.addEventListener("click", () => send(inputEl.value));
+    inputEl.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") send(inputEl.value);
+    });
+    quickEl.addEventListener("click", (e) => {
+      if (e.target.dataset.msg) send(e.target.dataset.msg);
+    });
+
+    addMessage("哈囉～我是新聞小助手 📰\n想找新聞可以跟我說「最新科技新聞」或「今天有什麼新聞」喔！", "bot");
+    inputEl.focus();
+  </script>
+</body>
+</html>
