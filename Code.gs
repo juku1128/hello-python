@@ -169,8 +169,6 @@ function callGeminiWithLiveContext(userPrompt, searchResults, currentTime) {
     return "哎呀！實實～尚未設定 Gemini API Key 喔！🥺\n請在第 13 行填入你的專屬金鑰～";
   }
 
-  const modelName = "gemini-3.8-flash";
-
   // 將爬到的真實資料組合成小抄
   let cheatSheetText = "";
   if (searchResults && searchResults.length > 0) {
@@ -196,53 +194,71 @@ function callGeminiWithLiveContext(userPrompt, searchResults, currentTime) {
     `• 檢索技術：GAS 獨立雲端爬蟲檢索架構（免卡純免費）🌐\n` +
     `• 查核狀態：100% 真實小抄驗證完成 🥰`;
 
-  const payload = {
-    contents: [
-      {
-        role: "user",
-        parts: [{ text: `${systemInstruction}\n\n${cheatSheetText}\n\n實實的問題是：${userPrompt}` }]
+  // 三重備援陣容：若 3.8 遇到全球高峰塞車 (503)，0.1秒無縫自動切換到 2.5 高速備援機房！
+  const modelConfigs = [
+    {
+      model: "gemini-3.8-flash",
+      generationConfig: {
+        temperature: 0.2,
+        maxOutputTokens: 1500,
+        thinkingConfig: { thinkingLevel: "low" }
       }
-    ],
-    generationConfig: {
-      temperature: 0.2, // 嚴謹模式，杜絕幻想
-      maxOutputTokens: 1500,
-      thinkingConfig: {
-        thinkingLevel: "low" // ⚡ 極速關鍵：將中度思考降為低延遲思考，回覆從 2 分鐘縮短至 3~5 秒！
+    },
+    {
+      model: "gemini-2.5-flash-lite",
+      generationConfig: {
+        temperature: 0.2,
+        maxOutputTokens: 1500
       }
-    }
-  };
-
-  const options = {
-    method: "post",
-    contentType: "application/json",
-    headers: { "x-goog-api-key": apiKey },
-    payload: JSON.stringify(payload),
-    muteHttpExceptions: true
-  };
-
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
-
-  try {
-    let response = UrlFetchApp.fetch(url, options);
-    let code = response.getResponseCode();
-
-    // 遇短暫 503 自動等 1.2 秒重試
-    if (code === 503 || code === 429) {
-      Utilities.sleep(1200);
-      response = UrlFetchApp.fetch(url, options);
-      code = response.getResponseCode();
-    }
-
-    if (code === 200) {
-      const result = JSON.parse(response.getContentText());
-      if (result.candidates && result.candidates.length > 0 && result.candidates[0].content) {
-        return result.candidates[0].content.parts[0].text;
+    },
+    {
+      model: "gemini-2.5-flash",
+      generationConfig: {
+        temperature: 0.2,
+        maxOutputTokens: 1500
       }
     }
-    return `⚠️ 實實～小助手連線遇到短暫異常 (狀態碼 ${code})，請等一下下再試一次唷！🥺`;
-  } catch (e) {
-    return `⚠️ 網路連線錯誤：${e.message}`;
+  ];
+
+  for (let mc of modelConfigs) {
+    const cleanModel = mc.model.replace(/[\u2013\u2014]/g, "-");
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${cleanModel}:generateContent?key=${apiKey}`;
+
+    const payload = {
+      contents: [
+        {
+          role: "user",
+          parts: [{ text: `${systemInstruction}\n\n${cheatSheetText}\n\n實實的問題是：${userPrompt}` }]
+        }
+      ],
+      generationConfig: mc.generationConfig
+    };
+
+    const options = {
+      method: "post",
+      contentType: "application/json",
+      headers: { "x-goog-api-key": apiKey },
+      payload: JSON.stringify(payload),
+      muteHttpExceptions: true
+    };
+
+    try {
+      let response = UrlFetchApp.fetch(url, options);
+      let code = response.getResponseCode();
+
+      if (code === 200) {
+        const result = JSON.parse(response.getContentText());
+        if (result.candidates && result.candidates.length > 0 && result.candidates[0].content) {
+          return result.candidates[0].content.parts[0].text;
+        }
+      }
+      // 若遇到 503、429 或其他狀態碼，自動無縫輪詢下一個備援機房！
+    } catch (e) {
+      // 異常自動換下一個
+    }
   }
+
+  return "哎呀實實～網路連線稍微有點卡住，請再送出一次問我看看唷！🥰";
 }
 
 
