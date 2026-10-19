@@ -505,8 +505,14 @@ def callback():
 def handle_line_message(event):
     user_id = getattr(getattr(event, "source", None), "user_id", "line_user")
     user_text = event.message.text
+    print(f"\n==========================================")
+    print(f"🔔 [轉接站收到題目] {user_text}")
+    print(f"⏰ [時間戳記] {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"⚡ 正在進行即時檢索與模型推論運算...")
+    print(f"==========================================\n")
     try:
         reply_text, _, _ = process_user_message(user_text, user_id=user_id)
+        print(f"✅ [轉接站回覆成功] 已將答案傳回手機 LINE！\n")
     except requests.exceptions.ConnectionError:
         reply_text = "抱歉，我連不上本機的 Ollama 服務 😢 請確認本機有開啟 Ollama。"
     except Exception as exc:
