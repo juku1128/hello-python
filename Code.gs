@@ -194,7 +194,7 @@ function callGeminiWithLiveContext(userPrompt, searchResults, currentTime) {
     `• 檢索技術：GAS 獨立雲端爬蟲檢索架構（免卡純免費）🌐\n` +
     `• 查核狀態：100% 真實小抄驗證完成 🥰`;
 
-  // 三重備援陣容：若 3.8 遇到全球高峰塞車 (503)，0.1秒無縫自動切換到 2.5 高速備援機房！
+  // 多重備援陣容：涵蓋 3.8、最新 Flash 動態別名與輕量 3.5 機房，0 秒無縫接軌！
   const modelConfigs = [
     {
       model: "gemini-3.8-flash",
@@ -205,7 +205,14 @@ function callGeminiWithLiveContext(userPrompt, searchResults, currentTime) {
       }
     },
     {
-      model: "gemini-2.5-flash-lite",
+      model: "gemini-flash-latest", // 官方自動路由健康機房的動態別名
+      generationConfig: {
+        temperature: 0.2,
+        maxOutputTokens: 1500
+      }
+    },
+    {
+      model: "gemini-3.5-flash-lite", // 輕量極速備援
       generationConfig: {
         temperature: 0.2,
         maxOutputTokens: 1500
@@ -219,6 +226,8 @@ function callGeminiWithLiveContext(userPrompt, searchResults, currentTime) {
       }
     }
   ];
+
+  let lastCode = null;
 
   for (let mc of modelConfigs) {
     const cleanModel = mc.model.replace(/[\u2013\u2014]/g, "-");
@@ -245,6 +254,15 @@ function callGeminiWithLiveContext(userPrompt, searchResults, currentTime) {
     try {
       let response = UrlFetchApp.fetch(url, options);
       let code = response.getResponseCode();
+      lastCode = code;
+
+      // 遇到暫時性 503 (機房尖峰) 或 429 (頻率限制)，自動暫停 1.2 秒立即原地重試一次！
+      if (code === 503 || code === 429) {
+        Utilities.sleep(1200);
+        response = UrlFetchApp.fetch(url, options);
+        code = response.getResponseCode();
+        lastCode = code;
+      }
 
       if (code === 200) {
         const result = JSON.parse(response.getContentText());
@@ -252,13 +270,13 @@ function callGeminiWithLiveContext(userPrompt, searchResults, currentTime) {
           return result.candidates[0].content.parts[0].text;
         }
       }
-      // 若遇到 503、429 或其他狀態碼，自動無縫輪詢下一個備援機房！
+      // 若非 200，自動無縫輪詢下一個備援機房！
     } catch (e) {
       // 異常自動換下一個
     }
   }
 
-  return "哎呀實實～網路連線稍微有點卡住，請再送出一次問我看看唷！🥰";
+  return `哎呀實實～目前連線到 Google 機房稍微有點塞車（伺服器狀態碼：${lastCode || "異常"}），請等 5 秒後再問我一次唷！🥰🌸`;
 }
 
 
