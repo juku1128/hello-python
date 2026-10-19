@@ -166,7 +166,7 @@ function callGeminiWithLiveContext(userPrompt, searchResults, currentTime) {
   const apiKey = (GEMINI_API_KEY || "").trim();
 
   if (!apiKey || apiKey.includes("請在此填入")) {
-    return "哎呀！實實～尚未設定 Gemini API Key 喔！🥺\n請在第 13 行填入你的專屬金鑰～";
+    return "哎呀！實實～尚未設定 Gemini API Key 喔！🥺\n請在第 14 行填入你的專屬金鑰～";
   }
 
   // 將爬到的真實資料組合成小抄
