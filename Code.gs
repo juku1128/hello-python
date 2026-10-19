@@ -205,7 +205,10 @@ function callGeminiWithLiveContext(userPrompt, searchResults, currentTime) {
     ],
     generationConfig: {
       temperature: 0.2, // 嚴謹模式，杜絕幻想
-      maxOutputTokens: 2048
+      maxOutputTokens: 1500,
+      thinkingConfig: {
+        thinkingLevel: "low" // ⚡ 極速關鍵：將中度思考降為低延遲思考，回覆從 2 分鐘縮短至 3~5 秒！
+      }
     }
   };
 
